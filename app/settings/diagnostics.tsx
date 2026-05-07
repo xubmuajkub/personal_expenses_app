@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
@@ -7,7 +7,6 @@ import * as MailComposer from 'expo-mail-composer';
 import { useFocusEffect } from 'expo-router';
 import { dumpLogs } from '@/lib/log';
 import { openDb } from '@/db/sqlite';
-import { Sheet } from '@/ui/Sheet';
 import { Button } from '@/ui/Button';
 import { Text } from '@/ui/Text';
 import { color, space } from '@/ui/theme';

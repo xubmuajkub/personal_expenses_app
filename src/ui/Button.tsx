@@ -11,6 +11,7 @@ type Props = {
   disabled?: boolean;
   variant?: ButtonVariant;
   style?: ViewStyle;
+  accessibilityLabel?: string;
 };
 
 const base: ViewStyle = {
@@ -32,7 +33,7 @@ const variantStyles: Record<ButtonVariant, ViewStyle> = {
   ghost: { backgroundColor: 'transparent' },
 };
 
-export function Button({ title, onPress, loading, disabled, variant = 'primary', style }: Props) {
+export function Button({ title, onPress, loading, disabled, variant = 'primary', style, accessibilityLabel }: Props) {
   const isLight = variant === 'secondary' || variant === 'ghost';
   const spinnerColor = isLight ? color.indigo500 : color.onDarkFg;
   const textTone = (() => {
@@ -46,6 +47,7 @@ export function Button({ title, onPress, loading, disabled, variant = 'primary',
       onPress={onPress}
       disabled={loading || disabled}
       accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel ?? title}
       accessibilityState={{ disabled: !!loading || !!disabled, busy: !!loading }}
       style={[base, variantStyles[variant], (loading || disabled) && { opacity: 0.6 }, style]}
     >
