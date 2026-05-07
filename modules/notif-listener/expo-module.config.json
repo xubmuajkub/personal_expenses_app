@@ -1,0 +1,7 @@
+{
+  "name": "notif-listener",
+  "platforms": ["android"],
+  "android": {
+    "modules": ["expo.modules.notiflistener.NotifListenerModule"]
+  }
+}

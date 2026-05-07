@@ -1,0 +1,12 @@
+{
+  "name": "notif-listener",
+  "version": "0.1.0",
+  "description": "BCELOne notification capture",
+  "main": "index.ts",
+  "types": "index.ts",
+  "peerDependencies": {
+    "expo": "*",
+    "expo-modules-core": "*",
+    "react-native": "*"
+  }
+}
