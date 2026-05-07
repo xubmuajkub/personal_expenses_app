@@ -42,8 +42,7 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
                 backgroundColor: color.fg,
                 alignItems: 'center', justifyContent: 'center',
                 marginTop: -28,
-                shadowColor: color.indigo500, shadowOpacity: 0.6, shadowRadius: 8,
-                shadowOffset: { width: 0, height: 0 }, elevation: 6,
+                ...shadow.glow,
               }}
             >
               <Text variant="display3" tone="onDark">+</Text>
