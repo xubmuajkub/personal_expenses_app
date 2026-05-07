@@ -10,7 +10,8 @@
     "test:watch": "jest --watch",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:test": "bash scripts/test-db.sh"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^3.0.2",
