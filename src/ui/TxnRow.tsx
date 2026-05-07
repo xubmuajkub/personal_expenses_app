@@ -7,8 +7,8 @@ import type { Transaction } from '@/domain/types';
 
 type Props = {
   txn: Transaction;
-  categoryName?: string;
-  accountName?: string;
+  categoryName?: string | undefined;
+  accountName?: string | undefined;
 };
 
 export function TxnRow({ txn, categoryName, accountName }: Props) {

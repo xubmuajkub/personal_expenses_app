@@ -47,10 +47,9 @@ export default function NewTxn() {
       setAccounts(a);
       setCategories(c);
       if (p) setBase(p.base_currency as Currency);
-      if (!accountId && a[0]) setAccountId(a[0].id);
+      setAccountId((prev) => prev ?? a[0]?.id ?? null);
     })();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
+  }, [userId, recents]);
 
   async function save() {
     if (!accountId) return;
@@ -62,14 +61,14 @@ export default function NewTxn() {
       await createTransaction(db, {
         user_id: userId,
         account_id: accountId,
-        category_id: kind === 'transfer' ? undefined : (categoryId ?? undefined),
+        ...(kind !== 'transfer' && categoryId ? { category_id: categoryId } : {}),
         kind,
         amount_micro: amt,
         currency,
         fx_rate_to_base: rate,
         occurred_at: new Date().toISOString(),
-        merchant: merchant || undefined,
-        note: note || undefined,
+        ...(merchant ? { merchant } : {}),
+        ...(note ? { note } : {}),
         source: 'manual',
       });
       await recents.set({ currency, accountId, categoryId });
