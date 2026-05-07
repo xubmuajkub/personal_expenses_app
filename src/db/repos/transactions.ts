@@ -1,0 +1,120 @@
+import type { SQLiteDatabase } from 'expo-sqlite';
+import type { Transaction, TxnKind, TxnSource, Currency } from '@/domain/types';
+import { applyRate } from '@/domain/money';
+import { enqueueOutbox, nowIso } from './base';
+import * as Crypto from 'expo-crypto';
+
+export interface CreateTransactionInput {
+  user_id: string;
+  account_id: string;
+  category_id?: string;
+  kind: TxnKind;
+  amount_micro: number;
+  currency: Currency;
+  fx_rate_to_base: number;
+  occurred_at: string;
+  merchant?: string;
+  note?: string;
+  source: TxnSource;
+  source_ref?: string;
+}
+
+export interface ListTransactionsFilter {
+  user_id: string;
+  from?: string;
+  to?: string;
+  account_id?: string;
+  category_id?: string;
+  kind?: TxnKind;
+  source?: TxnSource;
+  search?: string;
+  limit?: number;
+}
+
+export async function createTransaction(
+  db: SQLiteDatabase,
+  input: CreateTransactionInput,
+): Promise<Transaction> {
+  const id = Crypto.randomUUID();
+  const now = nowIso();
+  const amount_base_micro = applyRate(input.amount_micro, input.fx_rate_to_base);
+  const row: Transaction = {
+    id,
+    user_id: input.user_id,
+    account_id: input.account_id,
+    category_id: input.category_id ?? null,
+    kind: input.kind,
+    amount_micro: input.amount_micro,
+    currency: input.currency,
+    fx_rate_to_base: input.fx_rate_to_base,
+    amount_base_micro,
+    occurred_at: input.occurred_at,
+    merchant: input.merchant ?? null,
+    note: input.note ?? null,
+    receipt_url: null,
+    source: input.source,
+    source_ref: input.source_ref ?? null,
+    created_at: now,
+    updated_at: now,
+    deleted_at: null,
+    sync_version: 1,
+  };
+  await db.withTransactionAsync(async () => {
+    await db.runAsync(
+      `INSERT INTO transactions (id, user_id, account_id, category_id, kind,
+         amount_micro, currency, fx_rate_to_base, amount_base_micro, occurred_at,
+         merchant, note, source, source_ref, created_at, updated_at, sync_version)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
+      [
+        id, row.user_id, row.account_id, row.category_id, row.kind,
+        row.amount_micro, row.currency, row.fx_rate_to_base, row.amount_base_micro,
+        row.occurred_at, row.merchant, row.note, row.source, row.source_ref,
+        now, now,
+      ],
+    );
+    await enqueueOutbox(db, 'insert', 'transactions', id, row);
+  });
+  return row;
+}
+
+export async function listTransactions(
+  db: SQLiteDatabase,
+  filter: ListTransactionsFilter,
+): Promise<Transaction[]> {
+  const conditions: string[] = ['user_id = ?', 'deleted_at IS NULL'];
+  const vals: unknown[] = [filter.user_id];
+
+  if (filter.from) { conditions.push('occurred_at >= ?'); vals.push(filter.from); }
+  if (filter.to) { conditions.push('occurred_at <= ?'); vals.push(filter.to); }
+  if (filter.account_id) { conditions.push('account_id = ?'); vals.push(filter.account_id); }
+  if (filter.category_id) { conditions.push('category_id = ?'); vals.push(filter.category_id); }
+  if (filter.kind) { conditions.push('kind = ?'); vals.push(filter.kind); }
+  if (filter.source) { conditions.push('source = ?'); vals.push(filter.source); }
+  if (filter.search) {
+    conditions.push('(merchant LIKE ? OR note LIKE ?)');
+    vals.push(`%${filter.search}%`, `%${filter.search}%`);
+  }
+
+  const limit = filter.limit ?? 200;
+  const sql = `SELECT * FROM transactions WHERE ${conditions.join(' AND ')} ORDER BY occurred_at DESC LIMIT ${limit}`;
+  return db.getAllAsync<Transaction>(sql, vals);
+}
+
+export async function getTransaction(db: SQLiteDatabase, id: string): Promise<Transaction | null> {
+  const rows = await db.getAllAsync<Transaction>(
+    `SELECT * FROM transactions WHERE id = ? AND deleted_at IS NULL`,
+    [id],
+  );
+  return rows[0] ?? null;
+}
+
+export async function deleteTransaction(db: SQLiteDatabase, id: string): Promise<void> {
+  const now = nowIso();
+  await db.withTransactionAsync(async () => {
+    await db.runAsync(
+      `UPDATE transactions SET deleted_at = ?, updated_at = ?, sync_version = sync_version + 1 WHERE id = ?`,
+      [now, now, id],
+    );
+    await enqueueOutbox(db, 'delete', 'transactions', id, { id, deleted_at: now });
+  });
+}
