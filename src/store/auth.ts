@@ -18,6 +18,7 @@ export const useAuth = create<AuthState>((set) => ({
     const sb = getSupabase();
     const { data } = await sb.auth.getSession();
     set({ session: data.session, user: data.session?.user ?? null, loading: false });
+    // Subscription intentionally lives for the full app lifetime — no cleanup needed.
     sb.auth.onAuthStateChange((_evt, session) => {
       set({ session, user: session?.user ?? null });
     });

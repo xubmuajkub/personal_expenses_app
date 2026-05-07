@@ -9,6 +9,7 @@ import { color } from '@/ui/theme';
 
 export default function RootLayout() {
   const { session, loading, init } = useAuth();
+  const onboardingLoading = useOnboarding((s) => s.loading);
   const onboardingDone = useOnboarding((s) => s.completed);
   const segments = useSegments();
   const router = useRouter();
@@ -23,7 +24,7 @@ export default function RootLayout() {
   }, [session?.user?.id]);
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || onboardingLoading) return;
     const inAuth = segments[0] === '(auth)';
     const inOnboarding = segments[0] === '(onboarding)';
 
@@ -34,9 +35,9 @@ export default function RootLayout() {
     } else if (session && onboardingDone && (inAuth || inOnboarding)) {
       router.replace('/');
     }
-  }, [loading, session, segments, router, onboardingDone]);
+  }, [loading, onboardingLoading, session, segments, router, onboardingDone]);
 
-  if (loading) {
+  if (loading || onboardingLoading) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: color.bg }}>
         <ActivityIndicator color={color.indigo500} />

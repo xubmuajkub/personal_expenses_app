@@ -14,9 +14,11 @@ export default function CreateFirstAccount() {
   const userId = useAuth((s) => s.user?.id);
   const [name, setName] = useState('BCEL Savings');
   const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
 
   async function next() {
     if (!userId) return;
+    setErr(null);
     setLoading(true);
     try {
       const db = await openDb();
@@ -24,6 +26,8 @@ export default function CreateFirstAccount() {
       router.push(
         Platform.OS === 'android' ? '/(onboarding)/android-notif-permission' : '/',
       );
+    } catch (e) {
+      setErr((e as Error).message);
     } finally {
       setLoading(false);
     }
@@ -40,6 +44,7 @@ export default function CreateFirstAccount() {
         </Text>
         <Field label="Account name" value={name} onChangeText={setName} />
         <Button title="Create account" onPress={next} loading={loading} />
+        {err ? <Text variant="body" tone="danger">{err}</Text> : null}
       </View>
     </SafeAreaView>
   );

@@ -10,7 +10,7 @@ import { useOnboarding } from '@/store/onboarding';
 describe('onboarding store', () => {
   beforeEach(() => {
     Object.keys(mockStorage).forEach((k) => delete mockStorage[k]);
-    useOnboarding.setState({ completed: false });
+    useOnboarding.setState({ completed: false, loading: true });
   });
 
   it('starts not completed', () => {

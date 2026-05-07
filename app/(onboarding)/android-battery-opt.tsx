@@ -1,4 +1,4 @@
-import { View, Linking } from 'react-native';
+import { View, Platform, Linking } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/ui/Button';
@@ -10,7 +10,9 @@ export default function AndroidBatteryOpt() {
   const finish = useOnboarding((s) => s.finish);
 
   function open() {
-    void Linking.sendIntent('android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS');
+    if (Platform.OS === 'android') {
+      void Linking.sendIntent('android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS');
+    }
   }
 
   async function done() {

@@ -12,15 +12,22 @@ export default function SignUp() {
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [err, setErr] = useState<string | null>(null);
+  const [msg, setMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function submit() {
     setErr(null);
+    setMsg(null);
     setLoading(true);
-    const { error } = await getSupabase().auth.signUp({ email, password: pw });
+    const { data, error } = await getSupabase().auth.signUp({ email, password: pw });
+    if (error) { setErr(error.message); setLoading(false); return; }
+    if (!data.session) {
+      setMsg('Check your email to confirm your account, then sign in.');
+      setLoading(false);
+      return;
+    }
     setLoading(false);
-    if (error) setErr(error.message);
-    else router.replace('/(onboarding)/welcome');
+    router.replace('/(onboarding)/welcome');
   }
 
   return (
@@ -53,6 +60,12 @@ export default function SignUp() {
         {err ? (
           <Text variant="caption" tone="danger" style={{ marginBottom: space(3) }}>
             {err}
+          </Text>
+        ) : null}
+
+        {msg ? (
+          <Text variant="caption" tone="success" style={{ marginBottom: space(3) }}>
+            {msg}
           </Text>
         ) : null}
 

@@ -8,7 +8,7 @@ import { Text } from '@/ui/Text';
 import { AuroraArch } from '@/ui/AuroraArch';
 import { getSupabase } from '@/lib/supabase';
 import { signInWithGoogle } from '@/lib/google';
-import { color, space } from '@/ui/theme';
+import { color, radius, space } from '@/ui/theme';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
@@ -59,7 +59,7 @@ export default function SignIn() {
           <View
             style={{
               backgroundColor: color.bg,
-              borderRadius: 20,
+              borderRadius: radius.lg,
               padding: space(5),
               marginTop: space(4),
             }}
