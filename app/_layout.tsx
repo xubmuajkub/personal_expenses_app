@@ -6,6 +6,7 @@ import { useAuth } from '@/store/auth';
 import { useOnboarding } from '@/store/onboarding';
 import { bootSyncForUser, stopSyncForUser } from '@/sync/bootstrap';
 import { color } from '@/ui/theme';
+import { ToastHost } from '@/ui/UndoToast';
 
 export default function RootLayout() {
   const { session, loading, init } = useAuth();
@@ -49,6 +50,7 @@ export default function RootLayout() {
     <>
       <StatusBar style="auto" />
       <Stack screenOptions={{ headerShown: false }} />
+      <ToastHost />
     </>
   );
 }

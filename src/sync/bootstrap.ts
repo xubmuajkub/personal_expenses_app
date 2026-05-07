@@ -4,6 +4,7 @@ import { m001_init } from '@/db/migrations/001_init';
 import { getSupabase } from '@/lib/supabase';
 import { startSync, stopSync } from '@/sync';
 import { registerPushToken } from '@/lib/push_token';
+import { startNotifBridge, stopNotifBridge } from '@/native/notif_bridge';
 
 let started = false;
 let bootDeps: { sb: ReturnType<typeof getSupabase> } | null = null;
@@ -19,11 +20,13 @@ export async function bootSyncForUser(userId: string): Promise<void> {
   void sb.rpc('seed_default_categories');
   await startSync({ db, sb, userId });
   void registerPushToken(userId);
+  startNotifBridge(userId);
 }
 
 export function stopSyncForUser(): void {
   if (!started) return;
   if (bootDeps) stopSync(bootDeps);
+  stopNotifBridge();
   started = false;
   bootDeps = null;
 }
