@@ -15,12 +15,14 @@ export async function computeBalances(
   db: SQLiteDatabase,
   user_id: string,
   base_currency: Currency = 'LAK',
+  opts: { includeArchived?: boolean } = {},
 ): Promise<AccountBalance[]> {
   const accounts = await listAccounts(db, user_id);
+  const visible = opts.includeArchived ? accounts : accounts.filter((a) => !a.archived);
 
   const results: AccountBalance[] = [];
 
-  for (const account of accounts) {
+  for (const account of visible) {
     // Sum: opening_balance + income + transfer-in - expense - transfer-out
     // In the transaction model, income and transfer-to are positive amounts,
     // expense and transfer-from are negative amounts (by convention in balance calc).
