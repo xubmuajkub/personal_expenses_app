@@ -448,29 +448,28 @@ git commit -m "chore: gitignore, env example, typed env loader"
 
 ### Task 0.4: UI design tokens + primitives
 
-Implements the UI spec's token system. Every screen from Phase 4 onwards consumes these — no inline colour or font literals.
+Implements the UI spec's token system. Every screen from Phase 4 onwards consumes these — no inline colour or font literals. Sans-serif only (Geist), blush-cream + indigo aurora visual language.
 
 **Files:**
-- Create: `src/ui/theme.ts`, `src/ui/Text.tsx`, `src/ui/ArchGlow.tsx`, `src/ui/Gauge.tsx`, `src/ui/MiniBars.tsx`, `src/ui/StatTriple.tsx`, `assets/fonts/Fraunces.ttf`, `assets/fonts/Inter.ttf`
+- Create: `src/ui/theme.ts`, `src/ui/Text.tsx`, `src/ui/AuroraArch.tsx`, `src/ui/HalfArcGauge.tsx`, `src/ui/Ring.tsx`, `src/ui/MiniBars.tsx`, `src/ui/StatTriple.tsx`, `src/ui/TabBar.tsx`, `assets/fonts/Geist-Variable.ttf`
 - Test: `__tests__/ui/theme.test.ts`
 
 - [ ] **Step 1: Bundle fonts**
 
 ```bash
-npm install expo-font
+npm install expo-font expo-linear-gradient react-native-svg
 mkdir -p assets/fonts
-# Download Fraunces (variable) and Inter (variable) from Google Fonts:
-#   https://fonts.google.com/specimen/Fraunces
-#   https://fonts.google.com/specimen/Inter
-# Place the .ttf files at assets/fonts/Fraunces.ttf and assets/fonts/Inter.ttf
+# Download Geist (variable) — https://vercel.com/font or https://github.com/vercel/geist-font
+# Place at assets/fonts/Geist-Variable.ttf
+# Optional fallback: Inter — assets/fonts/Inter-Variable.ttf
 ```
 
-Update `app.config.ts` with the font plugin:
+Update `app.config.ts`:
 
 ```ts
 plugins: [
   // ...existing
-  ['expo-font', { fonts: ['./assets/fonts/Fraunces.ttf', './assets/fonts/Inter.ttf'] }],
+  ['expo-font', { fonts: ['./assets/fonts/Geist-Variable.ttf'] }],
 ],
 ```
 
@@ -480,51 +479,58 @@ plugins: [
 
 ```ts
 export const color = {
-  bg:           '#FBF7F0',
-  fg:           '#1A1410',
-  muted:        '#6B5E54',
-  hairline:     '#E9E2D6',
-  violet200:    '#DDD3FF',
-  violet500:    '#7C5BFF',
-  violet700:    '#4B2EE6',
-  success:      '#2F8F5C',
-  danger:       '#C7402E',
-  surfaceGlass: 'rgba(255,255,255,0.55)',
+  bg:            '#FAF4F4',
+  fg:            '#15131C',
+  muted:         '#6B6478',
+  hairline:      '#EEE6E8',
+  pink300:       '#F4C7D6',
+  pink500:       '#ED93B3',
+  lilac300:      '#D6CBF2',
+  lilac500:      '#B0A0E4',
+  indigo500:     '#6F77E0',
+  indigo700:     '#3A37A8',
+  blobDeep:      '#2B1F66',
+  success:       '#2F8F5C',
+  danger:        '#C7402E',
+  surface:       'rgba(255,255,255,0.70)',
+  surfaceQuiet:  'rgba(255,255,255,0.50)',
+  onDarkFg:      '#FFFFFF',
 } as const;
 
 export const radius = { sm: 8, md: 14, lg: 22, pill: 999 } as const;
 
 export const space = (n: number): number => n * 4;
 
-export const fonts = {
-  display: 'Fraunces',
-  body:    'Inter',
-  mono:    'JetBrainsMono',
-} as const;
+export const fonts = { sans: 'Geist' } as const;
 
 export type TypeStyleName =
-  | 'displayHero' | 'displayLarge' | 'displayMed' | 'displaySm'
+  | 'numHero' | 'display1' | 'display2' | 'display3'
   | 'bodyLg' | 'body' | 'caption' | 'mono';
 
 export const typeStyles: Record<TypeStyleName, {
-  fontFamily: string; fontSize: number; lineHeight: number; fontWeight: '400' | '500' | '600';
-  letterSpacing?: number; fontVariant?: ('tabular-nums')[];
+  fontFamily: string; fontSize: number; lineHeight: number; fontWeight: '400' | '500' | '600' | '700';
+  letterSpacing?: number; fontVariant?: ('tabular-nums')[]; textTransform?: 'uppercase';
 }> = {
-  displayHero:  { fontFamily: fonts.display, fontSize: 56, lineHeight: 60, fontWeight: '600', fontVariant: ['tabular-nums'] },
-  displayLarge: { fontFamily: fonts.display, fontSize: 36, lineHeight: 40, fontWeight: '600', fontVariant: ['tabular-nums'] },
-  displayMed:   { fontFamily: fonts.display, fontSize: 28, lineHeight: 32, fontWeight: '600' },
-  displaySm:    { fontFamily: fonts.display, fontSize: 22, lineHeight: 28, fontWeight: '600' },
-  bodyLg:       { fontFamily: fonts.body,    fontSize: 17, lineHeight: 24, fontWeight: '500' },
-  body:         { fontFamily: fonts.body,    fontSize: 15, lineHeight: 22, fontWeight: '400' },
-  caption:      { fontFamily: fonts.body,    fontSize: 12, lineHeight: 16, fontWeight: '500', letterSpacing: 0.6 },
-  mono:         { fontFamily: fonts.mono,    fontSize: 16, lineHeight: 22, fontWeight: '400', fontVariant: ['tabular-nums'] },
+  numHero:  { fontFamily: fonts.sans, fontSize: 56, lineHeight: 60, fontWeight: '700', fontVariant: ['tabular-nums'] },
+  display1: { fontFamily: fonts.sans, fontSize: 44, lineHeight: 48, fontWeight: '700', fontVariant: ['tabular-nums'] },
+  display2: { fontFamily: fonts.sans, fontSize: 32, lineHeight: 36, fontWeight: '700' },
+  display3: { fontFamily: fonts.sans, fontSize: 22, lineHeight: 28, fontWeight: '600' },
+  bodyLg:   { fontFamily: fonts.sans, fontSize: 17, lineHeight: 24, fontWeight: '500' },
+  body:     { fontFamily: fonts.sans, fontSize: 15, lineHeight: 22, fontWeight: '400' },
+  caption:  { fontFamily: fonts.sans, fontSize: 12, lineHeight: 16, fontWeight: '500', letterSpacing: 0.6 },
+  mono:     { fontFamily: 'Menlo',    fontSize: 16, lineHeight: 22, fontWeight: '400', fontVariant: ['tabular-nums'] },
 };
 
 export const shadow = {
-  s1:    { shadowColor: '#141410', shadowOpacity: 0.04, shadowRadius: 2,  shadowOffset: { width: 0, height: 1 }, elevation: 1 },
-  s2:    { shadowColor: '#141410', shadowOpacity: 0.06, shadowRadius: 24, shadowOffset: { width: 0, height: 8 }, elevation: 4 },
-  glow:  { shadowColor: '#4B2EE6', shadowOpacity: 0.18, shadowRadius: 80, shadowOffset: { width: 0, height: 0 }, elevation: 8 },
+  s1:   { shadowColor: '#141014', shadowOpacity: 0.04, shadowRadius: 2,  shadowOffset: { width: 0, height: 1 }, elevation: 1 },
+  s2:   { shadowColor: '#141014', shadowOpacity: 0.08, shadowRadius: 32, shadowOffset: { width: 0, height: 12 }, elevation: 4 },
+  glow: { shadowColor: '#6F77E0', shadowOpacity: 0.20, shadowRadius: 80, shadowOffset: { width: 0, height: 0 }, elevation: 8 },
 } as const;
+
+export const aurora = {
+  stops: [color.pink300, color.lilac300, color.indigo500, color.blobDeep] as const,
+  locations: [0, 0.35, 0.7, 1] as const,
+};
 ```
 
 - [ ] **Step 3: Tests**
@@ -532,14 +538,24 @@ export const shadow = {
 `__tests__/ui/theme.test.ts`:
 
 ```ts
-import { typeStyles, color } from '@/ui/theme';
+import { typeStyles, color, aurora } from '@/ui/theme';
+
 describe('theme', () => {
-  it('exposes hero display style with tabular numerals', () => {
-    expect(typeStyles.displayHero.fontFamily).toBe('Fraunces');
-    expect(typeStyles.displayHero.fontVariant).toContain('tabular-nums');
+  it('uses Geist sans for hero numbers with tabular numerals', () => {
+    expect(typeStyles.numHero.fontFamily).toBe('Geist');
+    expect(typeStyles.numHero.fontVariant).toContain('tabular-nums');
   });
-  it('uses cream-white background', () => {
-    expect(color.bg.toUpperCase()).toBe('#FBF7F0');
+  it('does not use any serif family', () => {
+    for (const [name, t] of Object.entries(typeStyles)) {
+      if (name === 'mono') continue;
+      expect(t.fontFamily).toBe('Geist');
+    }
+  });
+  it('uses blush-cream background', () => {
+    expect(color.bg.toUpperCase()).toBe('#FAF4F4');
+  });
+  it('aurora gradient runs pink -> lilac -> indigo -> deep', () => {
+    expect(aurora.stops).toEqual(['#F4C7D6', '#D6CBF2', '#6F77E0', '#2B1F66']);
   });
 });
 ```
@@ -552,15 +568,19 @@ describe('theme', () => {
 import { Text as RNText, type TextProps } from 'react-native';
 import { typeStyles, color, type TypeStyleName } from './theme';
 
+type Tone = 'fg' | 'muted' | 'indigo' | 'pink' | 'success' | 'danger' | 'onDark';
+
 type Props = TextProps & {
   variant?: TypeStyleName;
-  tone?: 'fg' | 'muted' | 'violet' | 'success' | 'danger';
+  tone?: Tone;
   caps?: boolean;
 };
 
-const tones = {
-  fg: color.fg, muted: color.muted, violet: color.violet500,
+const tones: Record<Tone, string> = {
+  fg: color.fg, muted: color.muted,
+  indigo: color.indigo500, pink: color.pink500,
   success: color.success, danger: color.danger,
+  onDark: color.onDarkFg,
 };
 
 export function Text({ variant = 'body', tone = 'fg', caps, style, ...rest }: Props) {
@@ -579,80 +599,115 @@ export function Text({ variant = 'body', tone = 'fg', caps, style, ...rest }: Pr
 }
 ```
 
-- [ ] **Step 5: ArchGlow**
+- [ ] **Step 5: AuroraArch background**
 
-`src/ui/ArchGlow.tsx`:
+`src/ui/AuroraArch.tsx`:
 
 ```tsx
-import { View, useWindowDimensions, StyleSheet, Platform } from 'react-native';
+import { View, type ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import MaskedView from '@react-native-masked-view/masked-view';
-import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
-import { color } from './theme';
+import { aurora, radius } from './theme';
 
-export function ArchGlow() {
-  const { width, height } = useWindowDimensions();
-  const glowH = Math.round(height * 0.6);
-
+export function AuroraArch({
+  height = 280, style, topRadius = radius.lg, bottomRadius = radius.md,
+}: {
+  height?: number; style?: ViewStyle; topRadius?: number; bottomRadius?: number;
+}) {
   return (
-    <View pointerEvents="none" style={[StyleSheet.absoluteFill, { overflow: 'hidden' }]}>
-      <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: glowH }}>
-        {Platform.OS === 'ios' ? (
-          <MaskedView
-            style={{ flex: 1 }}
-            maskElement={
-              <Svg width={width} height={glowH}>
-                <Defs>
-                  <RadialGradient id="m" cx="50%" cy="100%" r="80%">
-                    <Stop offset="0%" stopColor="#fff" stopOpacity="1" />
-                    <Stop offset="100%" stopColor="#fff" stopOpacity="0" />
-                  </RadialGradient>
-                </Defs>
-                <Rect x="0" y="0" width={width} height={glowH} fill="url(#m)" />
-              </Svg>
-            }>
-            <LinearGradient
-              colors={[color.violet700, color.violet500, 'transparent']}
-              locations={[0, 0.4, 1]}
-              start={{ x: 0.5, y: 1 }} end={{ x: 0.5, y: 0 }}
-              style={{ flex: 1 }}
-            />
-          </MaskedView>
-        ) : (
-          // Android fallback: skip mask, rely on gradient + subtle ellipse
-          <LinearGradient
-            colors={[color.violet700, color.violet500, 'transparent']}
-            locations={[0, 0.4, 1]}
-            start={{ x: 0.5, y: 1 }} end={{ x: 0.5, y: 0 }}
-            style={{ flex: 1, opacity: 0.6 }}
-          />
-        )}
-      </View>
+    <View
+      pointerEvents="none"
+      style={[
+        {
+          height,
+          overflow: 'hidden',
+          borderTopLeftRadius: topRadius,
+          borderTopRightRadius: topRadius,
+          borderBottomLeftRadius: bottomRadius,
+          borderBottomRightRadius: bottomRadius,
+        },
+        style,
+      ]}
+    >
+      <LinearGradient
+        colors={aurora.stops as unknown as string[]}
+        locations={aurora.locations as unknown as number[]}
+        start={{ x: 0.5, y: 0 }} end={{ x: 0.5, y: 1 }}
+        style={{ flex: 1 }}
+      />
     </View>
   );
 }
 ```
 
-```bash
-npm install expo-linear-gradient @react-native-masked-view/masked-view
+- [ ] **Step 6: HalfArcGauge**
+
+`src/ui/HalfArcGauge.tsx`:
+
+```tsx
+import { View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
+import { color } from './theme';
+
+interface Props {
+  value: number;          // 0..1
+  size?: number;
+  stroke?: number;
+  trackColor?: string;
+  fillColor?: string;
+  children?: React.ReactNode;
+}
+
+export function HalfArcGauge({
+  value, size = 120, stroke = 6,
+  trackColor = color.hairline, fillColor = color.indigo500, children,
+}: Props) {
+  const cx = size / 2;
+  const cy = size * 0.7;        // arc opens downward, center pushed down
+  const r = (size / 2) - stroke;
+  const startAngle = 200;       // degrees, from positive X axis
+  const endAngle = 340;
+  const sweep = endAngle - startAngle;
+  const path = (from: number, to: number) => describeArc(cx, cy, r, from, to);
+  const valueEnd = startAngle + sweep * Math.max(0, Math.min(value, 1));
+  return (
+    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+      <Svg width={size} height={size} style={{ position: 'absolute' }}>
+        <Path d={path(startAngle, endAngle)} stroke={trackColor} strokeWidth={stroke} fill="none" strokeLinecap="round" />
+        <Path d={path(startAngle, valueEnd)} stroke={fillColor} strokeWidth={stroke} fill="none" strokeLinecap="round" />
+      </Svg>
+      <View style={{ marginTop: 8, alignItems: 'center' }}>{children}</View>
+    </View>
+  );
+}
+
+function describeArc(cx: number, cy: number, r: number, start: number, end: number): string {
+  const polar = (deg: number) => {
+    const rad = (deg - 90) * (Math.PI / 180);
+    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+  };
+  const s = polar(end);
+  const e = polar(start);
+  const large = end - start <= 180 ? 0 : 1;
+  return `M ${s.x} ${s.y} A ${r} ${r} 0 ${large} 0 ${e.x} ${e.y}`;
+}
 ```
 
-- [ ] **Step 6: Gauge ring**
+- [ ] **Step 7: Ring (full circular)**
 
-`src/ui/Gauge.tsx`:
+`src/ui/Ring.tsx`:
 
 ```tsx
 import Svg, { Circle } from 'react-native-svg';
 import { View } from 'react-native';
 import { color } from './theme';
 
-export function Gauge({
+export function Ring({
   value, size = 84, stroke = 6, danger = false, children,
 }: { value: number; size?: number; stroke?: number; danger?: boolean; children?: React.ReactNode }) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const pct = Math.max(0, Math.min(value, 1));
-  const fill = danger || value > 1 ? color.danger : color.violet500;
+  const fill = danger || value > 1 ? color.danger : color.indigo700;
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
       <Svg width={size} height={size} style={{ position: 'absolute', transform: [{ rotate: '-90deg' }] }}>
@@ -666,7 +721,7 @@ export function Gauge({
 }
 ```
 
-- [ ] **Step 7: MiniBars + StatTriple**
+- [ ] **Step 8: MiniBars + StatTriple**
 
 `src/ui/MiniBars.tsx`:
 
@@ -685,7 +740,7 @@ export function MiniBars({ values, height = 56 }: { values: number[]; height?: n
           <View key={i}
             style={{
               width: 8, marginRight: 4, height: Math.max(2, h),
-              backgroundColor: isLast ? color.violet500 : color.violet200,
+              backgroundColor: isLast ? color.indigo500 : color.lilac300,
               borderTopLeftRadius: radius.sm, borderTopRightRadius: radius.sm,
             }} />
         );
@@ -701,37 +756,124 @@ export function MiniBars({ values, height = 56 }: { values: number[]; height?: n
 import { View } from 'react-native';
 import { Text } from './Text';
 
-export function StatTriple({ label, value, sub, valueVariant = 'displayHero', tone }:
-  { label: string; value: string; sub?: string; valueVariant?: 'displayHero' | 'displayLarge' | 'displayMed';
-    tone?: 'fg' | 'violet' | 'success' | 'danger' }) {
+export function StatTriple({
+  label, value, sub, valueVariant = 'numHero', tone,
+}: {
+  label: string; value: string; sub?: string;
+  valueVariant?: 'numHero' | 'display1' | 'display2' | 'display3';
+  tone?: 'fg' | 'indigo' | 'success' | 'danger' | 'onDark';
+}) {
   return (
     <View>
-      <Text variant="caption" tone="muted" caps>{label}</Text>
+      <Text variant="caption" tone={tone === 'onDark' ? 'onDark' : 'muted'} caps>{label}</Text>
       <Text variant={valueVariant} tone={tone ?? 'fg'} style={{ marginTop: 4 }}>{value}</Text>
-      {sub ? <Text variant="body" tone="muted" style={{ marginTop: 4 }}>{sub}</Text> : null}
+      {sub ? (
+        <Text variant="body" tone={tone === 'onDark' ? 'onDark' : 'muted'} style={{ marginTop: 4 }}>{sub}</Text>
+      ) : null}
     </View>
   );
 }
 ```
 
-- [ ] **Step 8: Update existing primitives to consume theme**
+- [ ] **Step 9: TabBar with floating "+"**
 
-Open `src/ui/Button.tsx`, `src/ui/Field.tsx`, `src/ui/Chip.tsx`, `src/ui/Sheet.tsx`, `src/ui/TxnRow.tsx` (created in earlier tasks once Phase 5 starts) and replace inline color/font literals with `color.*`, `radius.*`, `typeStyles.*`. Specifically:
+`src/ui/TabBar.tsx`:
 
-- Button: primary bg `color.fg`, text `color.bg`; secondary bg `color.surfaceGlass` + 1px hairline; pill radius.
-- Field: border `color.hairline` (focused: `color.violet500`), radius `radius.md`.
-- Chip: glassy default (`color.surfaceGlass` + hairline + `radius.pill`); selected bg `color.fg`, text `color.bg`.
-- Sheet: bg `color.bg`, sheet title uses `<Text variant="displaySm">`.
-- TxnRow: amount uses `<Text variant="displaySm">` right-aligned with tabular numerals; meta line uses `caption muted`.
+```tsx
+import { View, Pressable } from 'react-native';
+import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { color, radius, shadow } from './theme';
+import { Text } from './Text';
 
-> Engineer note: This task happens *after* the primitives exist (they're created in Phase 4 and 5). When implementing Phase 4 / 5 tasks, write the primitives directly against the theme in the first place. This Task 0.4 step is the placeholder for the design system itself; no primitives exist yet at this point in time, so the "update primitives" step here is forward-looking — it lives here to keep the design system task self-contained, but executes incrementally as primitives are created.
+const ICON_LABELS: Record<string, string> = {
+  index: 'Home',
+  transactions: 'Transactions',
+  add: '+',
+  budgets: 'Budgets',
+  more: 'More',
+};
 
-- [ ] **Step 9: Run + commit**
+export function TabBar({ state, navigation }: BottomTabBarProps) {
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        height: 76,
+        paddingHorizontal: 12,
+        paddingBottom: 12,
+        backgroundColor: color.surface,
+        borderTopLeftRadius: radius.lg,
+        borderTopRightRadius: radius.lg,
+        ...shadow.s2,
+      }}
+    >
+      {state.routes.map((route, idx) => {
+        const isAdd = route.name === 'add';
+        const focused = state.index === idx;
+        const label = ICON_LABELS[route.name] ?? route.name;
+
+        if (isAdd) {
+          return (
+            <Pressable
+              key={route.key}
+              onPress={() => navigation.navigate(route.name)}
+              style={{
+                width: 56, height: 56, borderRadius: 28,
+                backgroundColor: color.fg,
+                alignItems: 'center', justifyContent: 'center',
+                marginTop: -28,
+                shadowColor: color.indigo500, shadowOpacity: 0.6, shadowRadius: 8,
+                shadowOffset: { width: 0, height: 0 }, elevation: 6,
+              }}
+            >
+              <Text variant="display3" tone="onDark">+</Text>
+            </Pressable>
+          );
+        }
+
+        return (
+          <Pressable
+            key={route.key}
+            onPress={() => navigation.navigate(route.name)}
+            style={{ flex: 1, alignItems: 'center', paddingVertical: 8 }}
+          >
+            <Text variant="caption" tone={focused ? 'fg' : 'muted'} caps>{label}</Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+```
+
+- [ ] **Step 10: Update existing primitives to consume theme**
+
+`src/ui/Button.tsx`, `src/ui/Field.tsx`, `src/ui/Chip.tsx`, `src/ui/Sheet.tsx`, `src/ui/TxnRow.tsx` are created in Phase 4–5; write them against `theme` from the start. Specifically:
+
+- Button:
+  - Primary: bg `color.fg`, text `color.onDarkFg`, radius `radius.pill`.
+  - Accent: bg `color.indigo700`, text `color.onDarkFg`.
+  - Secondary: bg `color.surface` + 1px hairline, text `color.fg`.
+  - Ghost: text `color.indigo500`, no border.
+- Field: border `color.hairline` (focus `color.indigo500`), radius `radius.md`. Label rendered above as `<Text variant="caption" tone="muted" caps>`.
+- Chip: default bg `color.surfaceQuiet` + hairline + radius `radius.pill`; selected bg `color.fg`, text `color.onDarkFg`.
+- Sheet: bg `color.bg`. Sheet title uses `<Text variant="display3">`.
+- TxnRow: amount uses `<Text variant="display3">` right-aligned with tabular numerals; meta uses `caption muted`.
+
+> Engineer note: this update step is forward-looking. Implement it incrementally as each primitive is created in Phase 4 and Phase 5.
+
+- [ ] **Step 11: Tabs layout uses TabBar**
+
+`app/(tabs)/_layout.tsx` (Phase 5) uses `tabBar={(props) => <TabBar {...props} />}` instead of the default. Plain text icons are replaced by hairline icons from `lucide-react-native` (install when wiring icons).
+
+- [ ] **Step 12: Run + commit**
 
 ```bash
 npm test -- ui/theme.test
 git add -A
-git commit -m "feat(ui): design tokens, theme module, ArchGlow / Gauge / MiniBars / StatTriple primitives"
+git commit -m "feat(ui): tokens, Geist sans, AuroraArch / HalfArcGauge / Ring / MiniBars / StatTriple / TabBar"
 ```
 
 ---
