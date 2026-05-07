@@ -80,6 +80,14 @@ export async function listBudgets(
   );
 }
 
+export async function getBudget(db: SQLiteDatabase, id: string): Promise<Budget | null> {
+  const rows = await db.getAllAsync<Budget>(
+    `SELECT * FROM budgets WHERE id = ? AND deleted_at IS NULL`,
+    [id],
+  );
+  return rows[0] ?? null;
+}
+
 export async function deleteBudget(db: SQLiteDatabase, id: string): Promise<void> {
   const now = nowIso();
   await db.withTransactionAsync(async () => {
