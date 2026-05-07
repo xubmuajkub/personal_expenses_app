@@ -24,9 +24,15 @@ export interface ListTransactionsFilter {
   from?: string;
   to?: string;
   account_id?: string;
+  account_ids?: string[];
   category_id?: string;
+  category_ids?: string[];
   kind?: TxnKind;
   source?: TxnSource;
+  sources?: TxnSource[];
+  currency?: Currency;
+  amount_min_micro?: number;
+  amount_max_micro?: number;
   search?: string;
   limit?: number;
 }
@@ -87,9 +93,30 @@ export async function listTransactions(
   if (filter.from) { conditions.push('occurred_at >= ?'); vals.push(filter.from); }
   if (filter.to) { conditions.push('occurred_at <= ?'); vals.push(filter.to); }
   if (filter.account_id) { conditions.push('account_id = ?'); vals.push(filter.account_id); }
+  if (filter.account_ids && filter.account_ids.length > 0) {
+    conditions.push(`account_id IN (${filter.account_ids.map(() => '?').join(',')})`);
+    vals.push(...filter.account_ids);
+  }
   if (filter.category_id) { conditions.push('category_id = ?'); vals.push(filter.category_id); }
+  if (filter.category_ids && filter.category_ids.length > 0) {
+    conditions.push(`category_id IN (${filter.category_ids.map(() => '?').join(',')})`);
+    vals.push(...filter.category_ids);
+  }
   if (filter.kind) { conditions.push('kind = ?'); vals.push(filter.kind); }
   if (filter.source) { conditions.push('source = ?'); vals.push(filter.source); }
+  if (filter.sources && filter.sources.length > 0) {
+    conditions.push(`source IN (${filter.sources.map(() => '?').join(',')})`);
+    vals.push(...filter.sources);
+  }
+  if (filter.currency) { conditions.push('currency = ?'); vals.push(filter.currency); }
+  if (filter.amount_min_micro !== undefined) {
+    conditions.push('amount_micro >= ?');
+    vals.push(filter.amount_min_micro);
+  }
+  if (filter.amount_max_micro !== undefined) {
+    conditions.push('amount_micro <= ?');
+    vals.push(filter.amount_max_micro);
+  }
   if (filter.search) {
     conditions.push('(merchant LIKE ? OR note LIKE ?)');
     vals.push(`%${filter.search}%`, `%${filter.search}%`);
