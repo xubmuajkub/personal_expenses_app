@@ -14,12 +14,29 @@ const config: ExpoConfigWithPluginFns = {
   name: 'personal-expenses',
   slug: 'personal-expenses',
   scheme: 'personalexpenses',
-  version: '0.1.0',
+  version: '1.0.0',
   orientation: 'portrait',
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
-  ios: { supportsTablet: true, bundleIdentifier: 'la.personalexpenses.app' },
-  android: { package: 'la.personalexpenses.app' },
+  icon: './assets/icon.png',
+  splash: {
+    image: './assets/splash.png',
+    resizeMode: 'contain',
+    backgroundColor: '#FAF4F4',
+  },
+  ios: {
+    supportsTablet: true,
+    bundleIdentifier: 'la.personalexpenses.app',
+    buildNumber: '1',
+  },
+  android: {
+    package: 'la.personalexpenses.app',
+    versionCode: 1,
+    adaptiveIcon: {
+      foregroundImage: './assets/adaptive-icon.png',
+      backgroundColor: '#FAF4F4',
+    },
+  },
   plugins: [
     'expo-router',
     'expo-sqlite',
