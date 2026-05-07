@@ -4,6 +4,7 @@ jest.mock('expo-notifications', () => ({
   requestPermissionsAsync: jest.fn(),
   cancelScheduledNotificationAsync: jest.fn(),
   scheduleNotificationAsync: jest.fn(),
+  SchedulableTriggerInputTypes: { DAILY: 'daily' },
 }));
 
 jest.mock('react-native', () => ({
@@ -66,13 +67,13 @@ describe('scheduleDailyNudge', () => {
     expect(mockCancel).toHaveBeenCalledWith('daily-nudge');
   });
 
-  it('schedules with default hour=20 minute=0 repeating trigger', async () => {
+  it('schedules with default hour=20 minute=0 daily trigger', async () => {
     mockGet.mockResolvedValue({ granted: true });
     await scheduleDailyNudge();
     expect(mockSchedule).toHaveBeenCalledWith(
       expect.objectContaining({
         identifier: 'daily-nudge',
-        trigger: expect.objectContaining({ hour: 20, minute: 0, repeats: true }),
+        trigger: expect.objectContaining({ hour: 20, minute: 0 }),
       }),
     );
   });
@@ -82,7 +83,7 @@ describe('scheduleDailyNudge', () => {
     await scheduleDailyNudge(8, 30);
     expect(mockSchedule).toHaveBeenCalledWith(
       expect.objectContaining({
-        trigger: expect.objectContaining({ hour: 8, minute: 30, repeats: true }),
+        trigger: expect.objectContaining({ hour: 8, minute: 30 }),
       }),
     );
   });

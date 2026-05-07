@@ -1,4 +1,5 @@
 import * as Notifications from 'expo-notifications';
+import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { Platform } from 'react-native';
 
 Notifications.setNotificationHandler({
@@ -22,7 +23,9 @@ export async function scheduleDailyNudge(hour = 20, minute = 0): Promise<string>
   const id = await Notifications.scheduleNotificationAsync({
     identifier: 'daily-nudge',
     content: { title: "Log today's spend", body: 'Tap to add a transaction' },
-    trigger: { hour, minute, repeats: true, channelId: Platform.OS === 'android' ? 'reminders' : undefined },
+    trigger: Platform.OS === 'android'
+      ? { type: SchedulableTriggerInputTypes.DAILY, hour, minute, channelId: 'reminders' }
+      : { type: SchedulableTriggerInputTypes.DAILY, hour, minute },
   });
   return id;
 }
