@@ -3,21 +3,31 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, View } from 'react-native';
 import { useAuth } from '@/store/auth';
+import { useOnboarding } from '@/store/onboarding';
 import { color } from '@/ui/theme';
 
 export default function RootLayout() {
   const { session, loading, init } = useAuth();
+  const onboardingDone = useOnboarding((s) => s.completed);
   const segments = useSegments();
   const router = useRouter();
 
   useEffect(() => { void init(); }, [init]);
+  useEffect(() => { void useOnboarding.getState().load(); }, []);
 
   useEffect(() => {
     if (loading) return;
     const inAuth = segments[0] === '(auth)';
-    if (!session && !inAuth) router.replace('/(auth)/sign-in');
-    if (session && inAuth) router.replace('/');
-  }, [loading, session, segments, router]);
+    const inOnboarding = segments[0] === '(onboarding)';
+
+    if (!session && !inAuth) {
+      router.replace('/(auth)/sign-in');
+    } else if (session && !onboardingDone && !inOnboarding) {
+      router.replace('/(onboarding)/welcome');
+    } else if (session && onboardingDone && (inAuth || inOnboarding)) {
+      router.replace('/');
+    }
+  }, [loading, session, segments, router, onboardingDone]);
 
   if (loading) {
     return (
