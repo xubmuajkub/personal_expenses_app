@@ -8,6 +8,16 @@ jest.mock('@/sync/realtime', () => ({
   startRealtime: jest.fn(),
   stopRealtime: jest.fn(),
 }));
+jest.mock('@/domain/budgets', () => ({
+  monthBudgetStatuses: jest.fn().mockResolvedValue([]),
+}));
+jest.mock('@/lib/local_notifs', () => ({
+  setNotificationHandler: jest.fn(),
+  fireBudgetAlert: jest.fn().mockResolvedValue(undefined),
+}));
+jest.mock('@/domain/money', () => ({
+  format: jest.fn((micro: number, c: string) => `${micro} ${c}`),
+}));
 
 const mockFlushSpy = jest.fn().mockResolvedValue({ flushed: 0, deferred: 0, dropped: 0 });
 const mockPullAllSpy = jest.fn().mockResolvedValue(0);

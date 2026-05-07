@@ -3,6 +3,7 @@ import { runMigrations } from '@/db/migrations';
 import { m001_init } from '@/db/migrations/001_init';
 import { getSupabase } from '@/lib/supabase';
 import { startSync, stopSync } from '@/sync';
+import { registerPushToken } from '@/lib/push_token';
 
 let started = false;
 let bootDeps: { sb: ReturnType<typeof getSupabase> } | null = null;
@@ -17,6 +18,7 @@ export async function bootSyncForUser(userId: string): Promise<void> {
   // Seed default categories on the server (idempotent).
   void sb.rpc('seed_default_categories');
   await startSync({ db, sb, userId });
+  void registerPushToken(userId);
 }
 
 export function stopSyncForUser(): void {
