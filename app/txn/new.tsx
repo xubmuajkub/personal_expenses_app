@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Sheet } from '@/ui/Sheet';
 import { Field } from '@/ui/Field';
 import { Chip } from '@/ui/Chip';
@@ -14,13 +14,16 @@ import { listAccounts } from '@/db/repos/accounts';
 import { listCategories } from '@/db/repos/categories';
 import { getRate } from '@/db/repos/fx_rates';
 import { createTransaction } from '@/db/repos/transactions';
+import { listNotifParseRules } from '@/db/repos/notif_parse_rules';
 import { getProfile } from '@/db/repos/profiles';
 import { toMicro } from '@/domain/money';
+import { parseNotif } from '@/domain/notif_parser';
 import type { Account, Category, Currency, TxnKind } from '@/domain/types';
 
 export default function NewTxn() {
   const userId = useAuth((s) => s.user?.id)!;
   const recents = useRecents();
+  const { prefill } = useLocalSearchParams<{ prefill?: string }>();
 
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -50,6 +53,26 @@ export default function NewTxn() {
       setAccountId((prev) => prev ?? a[0]?.id ?? null);
     })();
   }, [userId, recents]);
+
+  // Prefill from share extension: personalexpenses://share?text=...
+  useEffect(() => {
+    if (!prefill) return;
+    void (async () => {
+      const db = await openDb();
+      const rules = await listNotifParseRules(db, userId);
+      const parsed = parseNotif({ package: 'manual', title: '', text: prefill }, rules);
+      if (parsed) {
+        const micro = parsed.amount_micro;
+        const wholePart = Math.floor(micro / 1_000_000);
+        const fracPart = micro % 1_000_000;
+        setAmount(fracPart === 0 ? String(wholePart) : `${wholePart}.${String(fracPart).replace(/0+$/, '')}`);
+        setCurrency(parsed.currency);
+        if (parsed.merchant) setMerchant(parsed.merchant);
+      } else {
+        setNote(prefill);
+      }
+    })();
+  }, [prefill, userId]);
 
   async function save() {
     if (!accountId) return;

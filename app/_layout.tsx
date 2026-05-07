@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Linking } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, View } from 'react-native';
@@ -7,6 +8,19 @@ import { useOnboarding } from '@/store/onboarding';
 import { bootSyncForUser, stopSyncForUser } from '@/sync/bootstrap';
 import { color } from '@/ui/theme';
 import { ToastHost } from '@/ui/UndoToast';
+
+function handleDeepLink(url: string, router: ReturnType<typeof useRouter>) {
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname === 'share') {
+      const text = parsed.searchParams.get('text') ?? '';
+      const encoded = encodeURIComponent(text);
+      router.push(`/txn/new?prefill=${encoded}`);
+    }
+  } catch {
+    // ignore malformed URLs
+  }
+}
 
 export default function RootLayout() {
   const { session, loading, init } = useAuth();
@@ -17,6 +31,17 @@ export default function RootLayout() {
 
   useEffect(() => { void init(); }, [init]);
   useEffect(() => { void useOnboarding.getState().load(); }, []);
+
+  // Handle share extension deep links: personalexpenses://share?text=...
+  useEffect(() => {
+    // Handle URL that launched the app
+    void Linking.getInitialURL().then((url) => {
+      if (url) handleDeepLink(url, router);
+    });
+    // Handle URLs while app is foregrounded
+    const sub = Linking.addEventListener('url', ({ url }) => handleDeepLink(url, router));
+    return () => sub.remove();
+  }, [router]);
 
   // Boot sync when signed in, stop on sign-out.
   useEffect(() => {

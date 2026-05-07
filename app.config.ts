@@ -1,13 +1,22 @@
 import type { ExpoConfig } from 'expo/config';
 
-const config: ExpoConfig = {
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const withShareExtension = require('./plugins/with-share-extension');
+
+// ExpoConfig.plugins types only allow strings/tuples; function plugins are valid
+// at runtime but not in the type definition. Cast to bypass.
+type ExpoConfigWithPluginFns = Omit<ExpoConfig, 'plugins' | 'newArchEnabled'> & {
+  newArchEnabled?: boolean;
+  plugins?: unknown[];
+};
+
+const config: ExpoConfigWithPluginFns = {
   name: 'personal-expenses',
   slug: 'personal-expenses',
   scheme: 'personalexpenses',
   version: '0.1.0',
   orientation: 'portrait',
   userInterfaceStyle: 'automatic',
-  // @ts-expect-error newArchEnabled is valid at runtime but not yet in @expo/config-types for SDK 55
   newArchEnabled: true,
   ios: { supportsTablet: true, bundleIdentifier: 'la.personalexpenses.app' },
   android: { package: 'la.personalexpenses.app' },
@@ -17,6 +26,7 @@ const config: ExpoConfig = {
     'expo-notifications',
     'expo-secure-store',
     ['expo-font', { fonts: ['./assets/fonts/Geist-Variable.ttf'] }],
+    withShareExtension,
   ],
 };
 

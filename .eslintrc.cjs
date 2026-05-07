@@ -33,5 +33,15 @@ module.exports = {
       files: ['__tests__/**/*.ts', '**/*.test.ts', '**/*.spec.ts'],
       rules: { '@typescript-eslint/no-require-imports': 'off' },
     },
+    {
+      // Expo config plugins are CommonJS modules; require() is expected.
+      // They are excluded from tsconfig so we must disable project-based parsing.
+      files: ['plugins/**/*.js'],
+      parserOptions: { project: null },
+      rules: {
+        '@typescript-eslint/no-require-imports': 'off',
+        '@typescript-eslint/no-floating-promises': 'off',
+      },
+    },
   ],
 };
