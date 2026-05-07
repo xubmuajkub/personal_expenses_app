@@ -12,11 +12,6 @@ export interface OutboxRow {
   last_error: string | null;
 }
 
-const MAX_BACKOFF_MS = 60_000;
-function backoff(attempts: number): number {
-  return Math.min(MAX_BACKOFF_MS, 500 * 2 ** attempts);
-}
-
 function classify(err: PostgrestError | null): 'retry' | 'drop' | 'stale' {
   if (!err) return 'drop';
   if (err.code === 'PT401') return 'stale';
@@ -27,14 +22,13 @@ function classify(err: PostgrestError | null): 'retry' | 'drop' | 'stale' {
 export async function flushOutbox(
   db: SQLiteDatabase,
   sb: SupabaseClient,
-  opts: { now?: () => number } = {},
 ): Promise<{ flushed: number; deferred: number; dropped: number }> {
-  void opts; // opts reserved for future backoff scheduling
   let flushed = 0, deferred = 0, dropped = 0;
+  let afterId = 0; // cursor: skip rows already visited this cycle
 
   for (;;) {
     const rows = await db.getAllAsync<OutboxRow>(
-      `SELECT * FROM outbox ORDER BY id ASC LIMIT 1`,
+      `SELECT * FROM outbox WHERE id > ? ORDER BY id ASC LIMIT 1`, [afterId],
     );
     const row = rows[0];
     if (!row) break;
@@ -63,11 +57,12 @@ export async function flushOutbox(
         `UPDATE outbox SET attempts = attempts + 1, last_error = ? WHERE id = ?`,
         [err.message, row.id],
       );
-      // 4xx loops indefinitely — promote to dead-letter by deleting after 5 tries.
+      // 4xx: promote to dead-letter after 5 tries; otherwise skip and drain the rest.
       if (row.attempts >= 4) {
         await db.runAsync(`DELETE FROM outbox WHERE id = ?`, [row.id]);
         dropped++;
-        continue;
+      } else {
+        afterId = row.id; // skip this row for the rest of this cycle
       }
       continue;
     } else if (verdict === 'stale') {
@@ -79,15 +74,12 @@ export async function flushOutbox(
       deferred++;
       break;
     } else {
-      // network/5xx: backoff and stop the cycle
-      const wait = backoff(row.attempts);
+      // network/5xx: backoff and stop the cycle; orchestrator retries on the next online tick
       await db.runAsync(
         `UPDATE outbox SET attempts = attempts + 1, last_error = ? WHERE id = ?`,
         [err.message, row.id],
       );
-      // signal caller to schedule retry after `wait`
       deferred++;
-      void wait; // wait used by orchestrator
       break;
     }
   }

@@ -61,6 +61,8 @@ async function writeCursor(db: SQLiteDatabase, table: string, ts: string): Promi
     [table, ts]);
 }
 
+// Per-row SELECT + INSERT OR REPLACE inside one transaction. Acceptable for
+// personal-scale data; revisit batch upsert if any synced table grows past ~10k rows.
 async function mergeRows(db: SQLiteDatabase, table: string, rows: Record<string, unknown>[]): Promise<void> {
   if (rows.length === 0) return;
   const first = rows[0];
@@ -82,6 +84,8 @@ async function mergeRows(db: SQLiteDatabase, table: string, rows: Record<string,
   });
 }
 
+// Postgres returns timestamps as ISO strings; this normalizer never sees a JS Date.
+// Booleans become 0/1; nested objects become JSON strings.
 function normalize(v: unknown): BindValue {
   if (typeof v === 'boolean') return v ? 1 : 0;
   if (v && typeof v === 'object') return JSON.stringify(v);

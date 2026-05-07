@@ -54,7 +54,7 @@ describe('outbox flush', () => {
     expect(left).toHaveLength(0);
   });
 
-  it('continues draining after a non-terminal 4xx', async () => {
+  it('drops a row at the dead-letter threshold and continues draining', async () => {
     const x = await (async () => {
       const d = await SQLite.openDatabaseAsync(`ob-${Math.random()}.db`);
       await runMigrations(d as any, [m001_init]);
@@ -92,5 +92,46 @@ describe('outbox flush', () => {
     // outbox is now empty
     const left = await x.getAllAsync('SELECT * FROM outbox');
     expect(left).toHaveLength(0);
+  });
+
+  it('flushes other rows in the same cycle past a non-terminal 4xx', async () => {
+    function staged([first, second]: Array<'ok' | 'rls403' | 'pt401' | 'net5xx'>) {
+      let n = 0;
+      return {
+        from: () => ({
+          upsert: async () => {
+            const v = n === 0 ? first : second; n++;
+            switch (v) {
+              case 'ok': return { error: null };
+              case 'pt401': return { error: { code: 'PT401', message: 'stale' } };
+              case 'net5xx': return { error: { code: '50000', message: 'boom' } };
+              case 'rls403': return { error: { code: '42501', message: 'rls' } };
+            }
+          },
+        }),
+      } as any;
+    }
+
+    const d = await SQLite.openDatabaseAsync(`ob-${Math.random()}.db`);
+    await runMigrations(d as any, [m001_init]);
+    // row 1 (lower id, attempts=0): fails with non-terminal RLS; loop skips it and moves on
+    await (d as any).runAsync(
+      `INSERT INTO outbox (op, table_name, row_id, payload, enqueued_at)
+       VALUES ('insert','accounts','a1','{"id":"a1"}', ?)`, [new Date().toISOString()]);
+    // row 2 (higher id): succeeds
+    await (d as any).runAsync(
+      `INSERT INTO outbox (op, table_name, row_id, payload, enqueued_at)
+       VALUES ('insert','accounts','a2','{"id":"a2"}', ?)`, [new Date().toISOString()]);
+
+    const r = await flushOutbox(d as any, staged(['rls403', 'ok']));
+
+    // a2 flushed; a1 stays in outbox with attempts=1 and last_error containing 'rls'
+    expect(r.flushed).toBe(1);
+    expect(r.dropped).toBe(0);
+    const left = await (d as any).getAllAsync(
+      `SELECT attempts, last_error FROM outbox`) as Array<{ attempts: number; last_error: string }>;
+    expect(left).toHaveLength(1);
+    expect(left[0]!.attempts).toBe(1);
+    expect(left[0]!.last_error).toMatch(/rls/i);
   });
 });

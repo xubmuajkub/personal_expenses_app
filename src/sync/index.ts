@@ -30,6 +30,7 @@ export async function cycle(deps: SyncDeps): Promise<void> {
       await pullAll(deps.db, deps.sb);
       await flushOutbox(deps.db, deps.sb);
     }
+    // Second pull: pick up any rows written by the re-flush above. Intentional, not a copy/paste.
     await pullAll(deps.db, deps.sb);
   } finally {
     cycling = false;
