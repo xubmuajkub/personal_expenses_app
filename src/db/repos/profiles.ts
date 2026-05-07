@@ -19,6 +19,25 @@ export async function getProfile(db: SQLiteDatabase, user_id: string): Promise<P
   return rows[0] ?? null;
 }
 
+export async function updateProfile(
+  db: SQLiteDatabase,
+  user_id: string,
+  fields: { display_name?: string },
+): Promise<void> {
+  const now = nowIso();
+  await db.withTransactionAsync(async () => {
+    if (fields.display_name !== undefined) {
+      await db.runAsync(
+        `UPDATE profiles SET display_name = ?, updated_at = ?, sync_version = sync_version + 1
+         WHERE id = ?`,
+        [fields.display_name, now, user_id],
+      );
+    }
+    const after = await db.getAllAsync<Profile>(`SELECT * FROM profiles WHERE id = ?`, [user_id]);
+    if (after[0]) await enqueueOutbox(db, 'update', 'profiles', user_id, after[0]);
+  });
+}
+
 export async function setBaseCurrency(
   db: SQLiteDatabase,
   user_id: string,
