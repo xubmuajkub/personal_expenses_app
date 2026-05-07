@@ -8,6 +8,9 @@ import { useOnboarding } from '@/store/onboarding';
 import { bootSyncForUser, stopSyncForUser } from '@/sync/bootstrap';
 import { color } from '@/ui/theme';
 import { ToastHost } from '@/ui/UndoToast';
+import { initObservability } from '@/lib/observability';
+
+initObservability();
 
 function handleDeepLink(url: string, router: ReturnType<typeof useRouter>) {
   try {
