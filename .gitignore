@@ -11,7 +11,14 @@ android/build/
 android/app/build/
 android/app/release/
 *.keystore
+*.pem
+*.key
+*.p12
+*.p8
+*.jks
+*.mobileprovision
 .env
 .env.*.local
 coverage/
 .expo-shared/
+expo-env.d.ts
