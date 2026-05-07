@@ -23,6 +23,7 @@ export const expoSqliteMock = {
       runAsync: async (sql: string, params: unknown[] = []) => db.prepare(sql).run(...params),
       getAllAsync: async <T>(sql: string, params: unknown[] = []) =>
         db.prepare(sql).all(...params) as T[],
+      // Limitation: nested withTransactionAsync is not supported by this mock — concurrent BEGINs will fail.
       withTransactionAsync: async (fn: () => Promise<void>) => {
         db.exec('BEGIN');
         try { await fn(); db.exec('COMMIT'); }

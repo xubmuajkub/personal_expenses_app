@@ -45,7 +45,7 @@ export async function createAccount(
 
 export async function listAccounts(db: SQLiteDatabase, user_id: string): Promise<Account[]> {
   return db.getAllAsync<Account>(
-    `SELECT *, archived AS archived FROM accounts
+    `SELECT * FROM accounts
      WHERE user_id = ? AND deleted_at IS NULL
      ORDER BY archived ASC, name ASC`,
     [user_id],

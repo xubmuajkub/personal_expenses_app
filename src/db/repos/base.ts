@@ -4,10 +4,6 @@ export function nowIso(): string {
   return new Date().toISOString();
 }
 
-export function notDeleted(): string {
-  return 'deleted_at IS NULL';
-}
-
 export async function enqueueOutbox(
   db: SQLiteDatabase,
   op: 'insert' | 'update' | 'delete',
