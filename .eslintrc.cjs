@@ -27,4 +27,11 @@ module.exports = {
     'react-native/no-raw-text': 'off',
   },
   ignorePatterns: ['node_modules', 'android', 'ios', 'dist', '.expo', 'coverage', '__mocks__', '*.config.js', '*.config.cjs', 'babel.config.js', 'metro.config.js'],
+  overrides: [
+    {
+      // Test files use require() inside test bodies for jest.resetModules() isolation.
+      files: ['__tests__/**/*.ts', '**/*.test.ts', '**/*.spec.ts'],
+      rules: { '@typescript-eslint/no-require-imports': 'off' },
+    },
+  ],
 };
