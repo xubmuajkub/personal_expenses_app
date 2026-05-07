@@ -1,0 +1,37 @@
+appId: la.personalexpenses.app
+---
+# Flow: log a transaction in airplane mode and verify it syncs on reconnect
+#
+# ENGINEER NOTE: Maestro does not natively support toggling airplane mode /
+# system network radio. The airplane-mode steps below must be performed
+# manually or via a wrapping script that calls:
+#   iOS:     xcrun simctl status_bar <device-id> override --batteryLevel 100
+#            (network toggle is NOT scriptable on physical iOS)
+#   Android: adb shell settings put global airplane_mode_on 1
+#            adb shell am broadcast -a android.intent.action.AIRPLANE_MODE --ez state true
+#
+# To automate on Android emulator, run enable-airplane.sh before this flow and
+# disable-airplane.sh after. See docs/operations/e2e-setup.md.
+
+- launchApp
+# ── Step 1: go offline (manual / adb) ──────────────────────────────────────
+# [MANUAL] Enable airplane mode now, then resume test.
+
+# ── Step 2: add a transaction while offline ────────────────────────────────
+- tapOn:
+    id: "Add transaction"
+- tapOn:
+    id: "Amount"
+- inputText: "20000"
+- tapOn: "Save"
+- assertVisible: "20,000"
+
+# ── Step 3: re-enable network (manual / adb) ───────────────────────────────
+# [MANUAL] Disable airplane mode now, then wait ~10 s for outbox drain.
+
+# ── Step 4: verify row persisted locally ──────────────────────────────────
+- tapOn: "Transactions"
+- assertVisible: "20,000"
+
+# ── Step 5: verify sync (external) ────────────────────────────────────────
+# Run `node scripts/check-sync.js` to confirm the row appears in Supabase.

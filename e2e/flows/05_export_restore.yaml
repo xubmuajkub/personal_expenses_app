@@ -1,0 +1,22 @@
+appId: la.personalexpenses.app
+---
+# Flow: export JSON backup, then restore it and verify transaction count
+- launchApp
+# Navigate to Data settings
+- tapOn: "More"
+- tapOn: "Data"
+- assertVisible: "Data"
+# Export JSON backup
+- tapOn: "JSON backup"
+# On iOS the share sheet will appear — dismiss it after saving the file
+# On Android a share dialog appears — save to Downloads
+# [MANUAL] After the share sheet appears, save the file as "backup.json"
+#          and then dismiss the share sheet to return to the app.
+
+# Now restore from the same file
+- tapOn: "Restore from JSON"
+# Confirmation alert
+- tapOn: "Restore"
+# [MANUAL] Pick backup.json from the file picker
+# Verify the success message contains a transaction count
+- assertVisible: "Restored"

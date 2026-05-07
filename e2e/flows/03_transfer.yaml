@@ -1,0 +1,28 @@
+appId: la.personalexpenses.app
+---
+# Flow: create a transfer between two accounts and verify balance change
+- launchApp
+# Navigate to the Accounts tab via More
+- tapOn: "More"
+- tapOn: "Accounts"
+# Note the balance of account A (manual verification — Maestro cannot read arbitrary numbers)
+# Navigate to Transfer screen (accessible via home or accounts list)
+- tapOn: "Transfer"
+- assertVisible: "Transfer"
+# Pick from-account
+- tapOn:
+    id: "From account"
+- tapOn: "BCEL Savings"
+# Pick to-account
+- tapOn:
+    id: "To account"
+- tapOn: "Wallet"
+# Enter amount
+- tapOn:
+    id: "Amount"
+- inputText: "10000"
+- tapOn: "Save"
+# Return to Accounts and verify updated balances
+- tapOn: "More"
+- tapOn: "Accounts"
+- assertVisible: "BCEL Savings"

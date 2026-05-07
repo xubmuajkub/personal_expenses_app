@@ -37,6 +37,8 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
             <Pressable
               key={route.key}
               onPress={() => navigation.navigate(route.name)}
+              accessibilityRole="button"
+              accessibilityLabel="Add transaction"
               style={{
                 width: 56, height: 56, borderRadius: 28,
                 backgroundColor: color.fg,

@@ -1,0 +1,30 @@
+appId: la.personalexpenses.app
+---
+# Flow: sign up a new account and complete onboarding
+- launchApp
+- assertVisible: "Sign in"
+- tapOn: "Create account"
+# Enter email — field must have accessibilityLabel="Email"
+- tapOn:
+    id: "Email"
+- inputText: "e2e+${RANDOM}@example.com"
+- tapOn:
+    id: "Password"
+- inputText: "Test1234!"
+- tapOn: "Create account"
+- assertVisible: "Welcome"
+- tapOn: "Get started"
+# Pick base currency
+- tapOn: "LAK"
+- tapOn: "Continue"
+# Create main account
+- assertVisible: "Your main account"
+- tapOn:
+    id: "Account name"
+- inputText: "BCEL Savings"
+- tapOn: "Create account"
+# Final onboarding step
+- assertVisible: "BCEL auto-capture"
+- tapOn: "Continue"
+# App should land on the home tab
+- assertVisible: "This month"

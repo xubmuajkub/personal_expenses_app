@@ -1,0 +1,19 @@
+appId: la.personalexpenses.app
+---
+# Flow: add a quick expense from the + FAB on the home tab
+- launchApp
+# Tap the floating action button (accessibilityLabel="Add transaction")
+- tapOn:
+    id: "Add transaction"
+# Enter amount
+- tapOn:
+    id: "Amount"
+- inputText: "50000"
+# Category defaults to first in list — leave it
+# Enter optional note
+- tapOn:
+    id: "Note"
+- inputText: "Lunch"
+- tapOn: "Save"
+# Should navigate back to home / transactions tab
+- assertVisible: "50,000"
