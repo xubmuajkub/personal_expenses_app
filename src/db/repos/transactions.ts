@@ -96,7 +96,8 @@ export async function listTransactions(
   }
 
   const limit = filter.limit ?? 200;
-  const sql = `SELECT * FROM transactions WHERE ${conditions.join(' AND ')} ORDER BY occurred_at DESC LIMIT ${limit}`;
+  vals.push(limit);
+  const sql = `SELECT * FROM transactions WHERE ${conditions.join(' AND ')} ORDER BY occurred_at DESC LIMIT ?`;
   return db.getAllAsync<Transaction>(sql, vals);
 }
 

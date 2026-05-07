@@ -36,31 +36,3 @@ export async function setBaseCurrency(
   });
 }
 
-export async function upsertProfile(
-  db: SQLiteDatabase,
-  user_id: string,
-  display_name: string | null,
-  base_currency: Currency = 'LAK',
-): Promise<Profile> {
-  const now = nowIso();
-  const existing = await getProfile(db, user_id);
-  if (existing) return existing;
-
-  const row: Profile = {
-    id: user_id,
-    display_name,
-    base_currency,
-    created_at: now,
-    updated_at: now,
-    sync_version: 1,
-  };
-  await db.withTransactionAsync(async () => {
-    await db.runAsync(
-      `INSERT INTO profiles (id, display_name, base_currency, created_at, updated_at, sync_version)
-       VALUES (?, ?, ?, ?, ?, 1)`,
-      [user_id, display_name, base_currency, now, now],
-    );
-    await enqueueOutbox(db, 'insert', 'profiles', user_id, row);
-  });
-  return row;
-}

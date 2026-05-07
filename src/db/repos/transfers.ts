@@ -48,15 +48,15 @@ export async function listTransfers(db: SQLiteDatabase, user_id: string): Promis
 
 export async function deleteTransfer(db: SQLiteDatabase, id: string): Promise<void> {
   const now = nowIso();
-  // Fetch the paired txn ids first
-  const rows = await db.getAllAsync<{ from_txn_id: string; to_txn_id: string }>(
-    `SELECT from_txn_id, to_txn_id FROM transfers WHERE id = ? AND deleted_at IS NULL`,
-    [id],
-  );
-  const transfer = rows[0];
-  if (!transfer) return;
-
   await db.withTransactionAsync(async () => {
+    // Read and soft-delete atomically inside the transaction to avoid TOCTOU
+    const rows = await db.getAllAsync<{ from_txn_id: string; to_txn_id: string }>(
+      `SELECT from_txn_id, to_txn_id FROM transfers WHERE id = ? AND deleted_at IS NULL`,
+      [id],
+    );
+    const transfer = rows[0];
+    if (!transfer) return;
+
     // Soft-delete the transfer record itself
     await db.runAsync(
       `UPDATE transfers SET deleted_at = ?, updated_at = ?, sync_version = sync_version + 1 WHERE id = ?`,
