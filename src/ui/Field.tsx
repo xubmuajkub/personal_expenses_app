@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { TextInput, View, type TextInputProps } from 'react-native';
 import { Text } from './Text';
-import { color, radius, space } from './theme';
+import { color, radius, space, typeStyles } from './theme';
 
 type Props = TextInputProps & {
   label: string;
@@ -27,8 +27,9 @@ export function Field({ label, error, style, ...rest }: Props) {
             borderRadius: radius.md,
             paddingHorizontal: space(3),
             paddingVertical: space(2.5),
-            fontSize: 15,
-            fontFamily: 'Geist',
+            fontSize: typeStyles.body.fontSize,
+            lineHeight: typeStyles.body.lineHeight,
+            fontFamily: typeStyles.body.fontFamily,
             color: color.fg,
             backgroundColor: color.surface,
           },
