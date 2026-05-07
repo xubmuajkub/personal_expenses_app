@@ -55,3 +55,46 @@ curl -X POST \
 
 Expected response body: `ok` (live rates fetched) or `ok-fallback` (yesterday's rates copied).
 Any other response: check **Supabase dashboard → Edge Functions → fx-rates-cron → Logs**.
+
+---
+
+## Phase 11 — Recurring engine cron (manual steps required)
+
+After deploying migration `0017_cron_recurring.sql` and the `recurring-engine-cron` edge function,
+you must set a database-level configuration parameter so the pg_cron job can call the function.
+
+### Step 1 — Set the recurring function URL
+
+Go to **Supabase dashboard → Database → Settings → Custom Postgres Config** and add:
+
+```sql
+ALTER DATABASE postgres SET "app.settings.recurring_fn_url" =
+  'https://djlnshaigsrxphasosow.functions.supabase.co/recurring-engine-cron';
+```
+
+> `app.settings.service_role_key` was already set in Phase 6. If not, also run:
+
+```sql
+ALTER DATABASE postgres SET "app.settings.service_role_key" = '<your-service-role-jwt>';
+```
+
+### Step 2 — Verify the recurring cron job
+
+```bash
+./node_modules/.bin/supabase db execute \
+  "SELECT jobname, schedule FROM cron.job WHERE jobname='recurring-engine-hourly'"
+```
+
+Expected: one row with `schedule = 5 * * * *`.
+
+### Step 3 — Smoke-test the recurring edge function
+
+```bash
+source .env
+curl -s -X POST \
+  -H "Authorization: Bearer $EXPO_PUBLIC_SUPABASE_ANON_KEY" \
+  https://djlnshaigsrxphasosow.functions.supabase.co/recurring-engine-cron | jq .
+```
+
+Expected: `{"processed":[],"errors":[],"total":0}` (or processed rules if any are due).
+Any other response: check **Supabase dashboard → Edge Functions → recurring-engine-cron → Logs**.
