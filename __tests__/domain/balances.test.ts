@@ -9,7 +9,7 @@ jest.mock('expo-sqlite', () => require('../db/_mock').expoSqliteMock);
 jest.mock('expo-crypto', () => require('../db/_mock').expoCryptoMock);
 
 const UID = 'u1';
-const BASE: 'LAK' = 'LAK';
+const BASE = 'LAK' as const;
 
 async function freshDb() {
   const db = await SQLite.openDatabaseAsync(`b-${Math.random()}.db`);

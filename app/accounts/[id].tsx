@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { View, ScrollView, Alert } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
-import { Sheet } from '@/ui/Sheet';
 import { Button } from '@/ui/Button';
 import { Text } from '@/ui/Text';
 import { TxnRow } from '@/ui/TxnRow';

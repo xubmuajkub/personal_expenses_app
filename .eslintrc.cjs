@@ -26,7 +26,7 @@ module.exports = {
     'react-native/sort-styles': 'off',
     'react-native/no-raw-text': 'off',
   },
-  ignorePatterns: ['node_modules', 'android', 'ios', 'dist', '.expo', 'coverage', '__mocks__', '*.config.js', '*.config.cjs', 'babel.config.js', 'metro.config.js'],
+  ignorePatterns: ['node_modules', 'android', 'ios', 'dist', '.expo', 'coverage', '__mocks__', '*.config.js', '*.config.cjs', 'babel.config.js', 'metro.config.js', 'supabase/functions'],
   overrides: [
     {
       // Test files use require() inside test bodies for jest.resetModules() isolation.

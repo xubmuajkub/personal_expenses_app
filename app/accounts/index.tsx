@@ -20,15 +20,12 @@ export default function AccountsIndex() {
   useEffect(() => {
     void (async () => {
       const db = await openDb();
-      const [profile, computed] = await Promise.all([
-        getProfile(db, userId),
-        computeBalances(db, userId),
-      ]);
+      const profile = await getProfile(db, userId);
       const baseCurrency: Currency = (profile?.base_currency ?? 'LAK') as Currency;
       setBase(baseCurrency);
-      const computed2 = await computeBalances(db, userId, baseCurrency);
-      setBalances(computed2);
-      const total = computed2.reduce((sum, b) => sum + b.balance_base_micro, 0);
+      const computed = await computeBalances(db, userId, baseCurrency);
+      setBalances(computed);
+      const total = computed.reduce((sum, b) => sum + b.balance_base_micro, 0);
       setTotalBase(total);
     })();
   }, [userId]);
