@@ -136,6 +136,37 @@ export async function getTransaction(db: SQLiteDatabase, id: string): Promise<Tr
   return rows[0] ?? null;
 }
 
+export interface UpdateTransactionInput {
+  receipt_url?: string | null;
+  merchant?: string | null;
+  note?: string | null;
+  category_id?: string | null;
+}
+
+export async function updateTransaction(
+  db: SQLiteDatabase,
+  id: string,
+  patch: UpdateTransactionInput,
+): Promise<void> {
+  const now = nowIso();
+  const fields: string[] = ['updated_at = ?', 'sync_version = sync_version + 1'];
+  const vals: (string | null)[] = [now];
+
+  if ('receipt_url' in patch) { fields.push('receipt_url = ?'); vals.push(patch.receipt_url ?? null); }
+  if ('merchant' in patch) { fields.push('merchant = ?'); vals.push(patch.merchant ?? null); }
+  if ('note' in patch) { fields.push('note = ?'); vals.push(patch.note ?? null); }
+  if ('category_id' in patch) { fields.push('category_id = ?'); vals.push(patch.category_id ?? null); }
+
+  vals.push(id);
+  await db.withTransactionAsync(async () => {
+    await db.runAsync(
+      `UPDATE transactions SET ${fields.join(', ')} WHERE id = ?`,
+      vals,
+    );
+    await enqueueOutbox(db, 'update', 'transactions', id, { id, ...patch, updated_at: now });
+  });
+}
+
 export async function deleteTransaction(db: SQLiteDatabase, id: string): Promise<void> {
   const now = nowIso();
   await db.withTransactionAsync(async () => {
