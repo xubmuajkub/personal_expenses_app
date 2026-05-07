@@ -1,4 +1,4 @@
-import type { SQLiteDatabase } from 'expo-sqlite';
+import type { SQLiteDatabase, SQLiteBindValue } from 'expo-sqlite';
 import type { Budget, Currency } from '@/domain/types';
 import { enqueueOutbox, nowIso } from './base';
 import * as Crypto from 'expo-crypto';
@@ -72,7 +72,7 @@ export async function listBudgets(
   month?: string,
 ): Promise<Budget[]> {
   const conditions = ['user_id = ?', 'deleted_at IS NULL'];
-  const vals: unknown[] = [user_id];
+  const vals: SQLiteBindValue[] = [user_id];
   if (month) { conditions.push('month = ?'); vals.push(month); }
   return db.getAllAsync<Budget>(
     `SELECT * FROM budgets WHERE ${conditions.join(' AND ')} ORDER BY month DESC`,

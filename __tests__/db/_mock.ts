@@ -15,7 +15,8 @@ export const expoCryptoMock = {
 };
 
 export const expoSqliteMock = {
-  openDatabaseAsync: jest.fn(async (name: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  openDatabaseAsync: jest.fn(async (_name: string) => {
     const db = sqlite(':memory:');
     return {
       execAsync: async (sql: string) => db.exec(sql),

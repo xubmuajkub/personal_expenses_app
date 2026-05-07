@@ -1,4 +1,4 @@
-import type { SQLiteDatabase } from 'expo-sqlite';
+import type { SQLiteDatabase, SQLiteBindValue } from 'expo-sqlite';
 import type { Transaction, TxnKind, TxnSource, Currency } from '@/domain/types';
 import { applyRate } from '@/domain/money';
 import { enqueueOutbox, nowIso } from './base';
@@ -82,7 +82,7 @@ export async function listTransactions(
   filter: ListTransactionsFilter,
 ): Promise<Transaction[]> {
   const conditions: string[] = ['user_id = ?', 'deleted_at IS NULL'];
-  const vals: unknown[] = [filter.user_id];
+  const vals: SQLiteBindValue[] = [filter.user_id];
 
   if (filter.from) { conditions.push('occurred_at >= ?'); vals.push(filter.from); }
   if (filter.to) { conditions.push('occurred_at <= ?'); vals.push(filter.to); }

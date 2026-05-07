@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as SQLite from 'expo-sqlite';
 import { runMigrations } from '@/db/migrations';
 import { m001_init } from '@/db/migrations/001_init';

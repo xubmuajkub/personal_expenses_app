@@ -1,4 +1,4 @@
-import type { SQLiteDatabase } from 'expo-sqlite';
+import type { SQLiteDatabase, SQLiteBindValue } from 'expo-sqlite';
 import type { Account, AccountType, Currency } from '@/domain/types';
 import { enqueueOutbox, nowIso } from './base';
 import * as Crypto from 'expo-crypto';
@@ -59,7 +59,7 @@ export async function updateAccount(
 ): Promise<void> {
   const now = nowIso();
   const sets: string[] = [];
-  const vals: unknown[] = [];
+  const vals: SQLiteBindValue[] = [];
   if (patch.name !== undefined) { sets.push('name = ?'); vals.push(patch.name); }
   if (patch.archived !== undefined) { sets.push('archived = ?'); vals.push(patch.archived ? 1 : 0); }
   if (patch.opening_balance_micro !== undefined) {

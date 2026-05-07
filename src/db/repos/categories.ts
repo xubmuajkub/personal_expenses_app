@@ -1,4 +1,4 @@
-import type { SQLiteDatabase } from 'expo-sqlite';
+import type { SQLiteDatabase, SQLiteBindValue } from 'expo-sqlite';
 import type { Category, CategoryKind } from '@/domain/types';
 import { enqueueOutbox, nowIso } from './base';
 import * as Crypto from 'expo-crypto';
@@ -51,7 +51,7 @@ export async function listCategories(
     `SELECT * FROM categories
      WHERE user_id = ? AND deleted_at IS NULL${kind ? ' AND kind = ?' : ''}
      ORDER BY archived ASC, name ASC`,
-    kind ? [user_id, kind] : [user_id],
+    (kind ? [user_id, kind] : [user_id]) as SQLiteBindValue[],
   );
   return rows.map((r) => ({ ...r, archived: !!(r as unknown as { archived: number }).archived }));
 }
@@ -73,7 +73,7 @@ export async function updateCategory(
 ): Promise<void> {
   const now = nowIso();
   const sets: string[] = [];
-  const vals: unknown[] = [];
+  const vals: SQLiteBindValue[] = [];
   if (patch.name !== undefined) { sets.push('name = ?'); vals.push(patch.name); }
   if (patch.icon !== undefined) { sets.push('icon = ?'); vals.push(patch.icon); }
   if (patch.color !== undefined) { sets.push('color = ?'); vals.push(patch.color); }
