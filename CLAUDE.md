@@ -6,11 +6,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Pre-implementation. The repository currently contains only a design spec — no application code, no `package.json`, no build tooling. Read the spec before suggesting code changes.
 
-## Authoritative spec
+## Authoritative specs
 
-[`docs/superpowers/specs/2026-05-07-personal-expenses-design.md`](docs/superpowers/specs/2026-05-07-personal-expenses-design.md)
+- Functional: [`docs/superpowers/specs/2026-05-07-personal-expenses-design.md`](docs/superpowers/specs/2026-05-07-personal-expenses-design.md) — scope, architecture, data model, sync semantics, acceptance criteria. §14 "Decision log" records every Q/A from brainstorming; defer to it rather than inventing alternatives.
+- UI / visual language: [`docs/superpowers/specs/2026-05-07-personal-expenses-ui.md`](docs/superpowers/specs/2026-05-07-personal-expenses-ui.md) — cream-white + violet arch glow, serif display numbers, glassy chip pills, gauge rings. Tokens live in `src/ui/theme.ts`; **no inline color or font literals** in screens — always import from `theme`.
 
-That document is the source of truth for scope, architecture, data model, sync semantics, and acceptance criteria. Section 14 ("Decision log") records every Q/A made during brainstorming — when in doubt, defer to those decisions rather than inventing alternatives.
+Implementation plan: [`docs/superpowers/plans/2026-05-07-personal-expenses.md`](docs/superpowers/plans/2026-05-07-personal-expenses.md). Task 0.4 establishes the design tokens; every UI task downstream consumes them.
 
 ## What this app is, in one paragraph
 
