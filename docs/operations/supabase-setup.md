@@ -98,3 +98,45 @@ curl -s -X POST \
 
 Expected: `{"processed":[],"errors":[],"total":0}` (or processed rules if any are due).
 Any other response: check **Supabase dashboard → Edge Functions → recurring-engine-cron → Logs**.
+
+---
+
+## Phase 12 — Push notification fanout (manual steps required)
+
+After deploying migration `0018_cron_push.sql` and the `push-notif-fanout` edge function,
+set the database-level configuration parameter so the pg_cron job can call the function.
+
+### Step 1 — Set the push fanout function URL
+
+Go to **Supabase dashboard → Database → Settings → Custom Postgres Config** and add:
+
+```sql
+ALTER DATABASE postgres SET "app.settings.push_fn_url" =
+  'https://djlnshaigsrxphasosow.functions.supabase.co/push-notif-fanout';
+```
+
+> `app.settings.service_role_key` was already set in Phase 6. If not, also run:
+
+```sql
+ALTER DATABASE postgres SET "app.settings.service_role_key" = '<your-service-role-jwt>';
+```
+
+### Step 2 — Verify the push cron job
+
+```bash
+./node_modules/.bin/supabase db execute \
+  "SELECT jobname, schedule FROM cron.job WHERE jobname='push-fanout-1m'"
+```
+
+Expected: one row with `schedule = * * * * *`.
+
+### Step 3 — Smoke-test the push fanout edge function
+
+```bash
+source .env
+curl -s -X POST \
+  https://djlnshaigsrxphasosow.functions.supabase.co/push-notif-fanout | jq .
+```
+
+Expected: `{"sent":0}` (or a positive count if push_queue has pending rows).
+Any other response: check **Supabase dashboard → Edge Functions → push-notif-fanout → Logs**.
