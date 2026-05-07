@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, View } from 'react-native';
 import { useAuth } from '@/store/auth';
 import { useOnboarding } from '@/store/onboarding';
+import { bootSyncForUser, stopSyncForUser } from '@/sync/bootstrap';
 import { color } from '@/ui/theme';
 
 export default function RootLayout() {
@@ -14,6 +15,12 @@ export default function RootLayout() {
 
   useEffect(() => { void init(); }, [init]);
   useEffect(() => { void useOnboarding.getState().load(); }, []);
+
+  // Boot sync when signed in, stop on sign-out.
+  useEffect(() => {
+    if (session?.user?.id) void bootSyncForUser(session.user.id);
+    else stopSyncForUser();
+  }, [session?.user?.id]);
 
   useEffect(() => {
     if (loading) return;

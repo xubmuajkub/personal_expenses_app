@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/ui/Button';
@@ -46,7 +46,7 @@ export default function SignUp() {
           value={pw}
           onChangeText={setPw}
           secureTextEntry
-          autoComplete="newPassword"
+          autoComplete="new-password"
           textContentType="newPassword"
         />
 

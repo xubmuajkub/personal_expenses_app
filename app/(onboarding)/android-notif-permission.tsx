@@ -8,7 +8,7 @@ import { color, space } from '@/ui/theme';
 export default function AndroidNotifPermission() {
   function open() {
     if (Platform.OS === 'android') {
-      Linking.sendIntent('android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS');
+      void Linking.sendIntent('android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS');
     }
   }
 

@@ -36,7 +36,7 @@ export default function CreateFirstAccount() {
           Your main account
         </Text>
         <Text variant="body" tone="muted" style={{ marginBottom: space(5) }}>
-          We'll use this as the default for BCEL notifications. You can add more later.
+          We&apos;ll use this as the default for BCEL notifications. You can add more later.
         </Text>
         <Field label="Account name" value={name} onChangeText={setName} />
         <Button title="Create account" onPress={next} loading={loading} />

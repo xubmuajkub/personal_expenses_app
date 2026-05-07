@@ -10,7 +10,7 @@ export default function AndroidBatteryOpt() {
   const finish = useOnboarding((s) => s.finish);
 
   function open() {
-    Linking.sendIntent('android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS');
+    void Linking.sendIntent('android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS');
   }
 
   async function done() {
