@@ -62,6 +62,7 @@
     "jest-expo": "^55.0.17",
     "prettier": "^3.8.3",
     "react-native-worklets": "^0.8.3",
+    "supabase": "^2.98.2",
     "ts-jest": "^29.4.9",
     "typescript": "~5.9.2"
   },
