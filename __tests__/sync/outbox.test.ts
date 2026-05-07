@@ -53,4 +53,44 @@ describe('outbox flush', () => {
     const left = await x.getAllAsync('SELECT * FROM outbox');
     expect(left).toHaveLength(0);
   });
+
+  it('continues draining after a non-terminal 4xx', async () => {
+    const x = await (async () => {
+      const d = await SQLite.openDatabaseAsync(`ob-${Math.random()}.db`);
+      await runMigrations(d as any, [m001_init]);
+      // row 1 (lower id): will fail with RLS (4xx) — pre-set attempts = 4 so
+      // it dead-letters on the first cycle and does not get re-processed.
+      await (d as any).runAsync(
+        `INSERT INTO outbox (op, table_name, row_id, payload, enqueued_at, attempts)
+         VALUES ('insert','accounts','a1','{"id":"a1"}', ?, 4)`, [new Date().toISOString()]);
+      // row 2 (higher id): will succeed
+      await (d as any).runAsync(
+        `INSERT INTO outbox (op, table_name, row_id, payload, enqueued_at)
+         VALUES ('insert','accounts','a2','{"id":"a2"}', ?)`, [new Date().toISOString()]);
+      return d as any;
+    })();
+
+    // Supabase that always fails for row a1 (rls) and succeeds for row a2
+    const attempted = new Set<string>();
+    const mixedSb = {
+      from: () => ({
+        upsert: async (payload: { id: string }) => {
+          attempted.add(payload.id);
+          if (payload.id === 'a1') return { error: { code: '42501', message: 'rls' } };
+          return { error: null };
+        },
+      }),
+    } as any;
+
+    const r = await flushOutbox(x, mixedSb);
+    // both rows must have been attempted in the same flush cycle
+    expect(attempted.has('a1')).toBe(true);
+    expect(attempted.has('a2')).toBe(true);
+    // a1 dead-lettered (dropped), a2 succeeded
+    expect(r.dropped).toBe(1);
+    expect(r.flushed).toBe(1);
+    // outbox is now empty
+    const left = await x.getAllAsync('SELECT * FROM outbox');
+    expect(left).toHaveLength(0);
+  });
 });

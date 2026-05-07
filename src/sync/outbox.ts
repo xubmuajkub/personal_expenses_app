@@ -69,8 +69,7 @@ export async function flushOutbox(
         dropped++;
         continue;
       }
-      deferred++;
-      break;
+      continue;
     } else if (verdict === 'stale') {
       // Caller's responsibility to re-pull and retry. Mark and break.
       await db.runAsync(
