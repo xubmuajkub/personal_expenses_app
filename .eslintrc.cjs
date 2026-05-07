@@ -17,6 +17,14 @@ module.exports = {
     '@typescript-eslint/consistent-type-imports': 'error',
     '@typescript-eslint/no-floating-promises': 'error',
     'no-console': ['warn', { allow: ['warn', 'error'] }],
+    // 'plugin:react-native/all' enables a wide net; turn off the most opinionated
+    // rules so tooling does not drive source-level decisions. Color and font
+    // discipline is enforced by the design-tokens module (src/ui/theme.ts) and
+    // by code review, not by ESLint.
+    'react-native/no-color-literals': 'off',
+    'react-native/no-inline-styles': 'off',
+    'react-native/sort-styles': 'off',
+    'react-native/no-raw-text': 'off',
   },
   ignorePatterns: ['node_modules', 'android', 'ios', 'dist', '.expo', 'coverage', '__mocks__', '*.config.js', '*.config.cjs', 'babel.config.js', 'metro.config.js'],
 };
