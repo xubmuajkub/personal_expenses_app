@@ -16,7 +16,7 @@ function update(state: NetInfoState) {
 
 export function startNetworkWatcher(): void {
   if (unsub) return;
-  NetInfo.fetch().then(update);
+  void NetInfo.fetch().then(update);
   unsub = NetInfo.addEventListener(update);
 }
 

@@ -29,10 +29,10 @@ export async function flushOutbox(
   sb: SupabaseClient,
   opts: { now?: () => number } = {},
 ): Promise<{ flushed: number; deferred: number; dropped: number }> {
-  const now = opts.now ?? Date.now;
+  void opts; // opts reserved for future backoff scheduling
   let flushed = 0, deferred = 0, dropped = 0;
 
-  while (true) {
+  for (;;) {
     const rows = await db.getAllAsync<OutboxRow>(
       `SELECT * FROM outbox ORDER BY id ASC LIMIT 1`,
     );

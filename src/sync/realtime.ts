@@ -17,7 +17,7 @@ export function startRealtime(db: SQLiteDatabase, sb: SupabaseClient, userId: st
 
 export function stopRealtime(sb: SupabaseClient): void {
   if (channel) {
-    sb.removeChannel(channel);
+    void sb.removeChannel(channel);
     channel = null;
   }
 }

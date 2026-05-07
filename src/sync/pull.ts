@@ -1,6 +1,8 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+type BindValue = string | number | null | boolean | Uint8Array;
+
 export const SYNCED_TABLES = [
   'profiles',
   'accounts',
@@ -26,7 +28,7 @@ export async function pullTable(
   const cursor = await readCursor(db, table);
   let total = 0;
   let nextCursor = cursor;
-  while (true) {
+  for (;;) {
     const q = sb.from(table).select('*').gt('updated_at', nextCursor).order('updated_at', { ascending: true }).limit(PAGE);
     const { data, error } = await q;
     if (error) throw error;
@@ -59,25 +61,29 @@ async function writeCursor(db: SQLiteDatabase, table: string, ts: string): Promi
     [table, ts]);
 }
 
-async function mergeRows(db: SQLiteDatabase, table: string, rows: any[]): Promise<void> {
+async function mergeRows(db: SQLiteDatabase, table: string, rows: Record<string, unknown>[]): Promise<void> {
   if (rows.length === 0) return;
-  const keys = Object.keys(rows[0]);
+  const first = rows[0];
+  if (!first) return;
+  const keys = Object.keys(first);
   const placeholders = '(' + keys.map(() => '?').join(',') + ')';
   const sql = `INSERT OR REPLACE INTO ${table} (${keys.join(',')}) VALUES ${placeholders}`;
   await db.withTransactionAsync(async () => {
     for (const r of rows) {
+      const rowId = r['id'] as BindValue;
       const local = await db.getAllAsync<{ sync_version: number }>(
-        `SELECT sync_version FROM ${table} WHERE id = ?`, [r.id]);
+        `SELECT sync_version FROM ${table} WHERE id = ?`, [rowId]);
       const localV = local[0]?.sync_version ?? 0;
-      if ((r.sync_version ?? 0) >= localV) {
+      const remoteV = typeof r['sync_version'] === 'number' ? r['sync_version'] : 0;
+      if (remoteV >= localV) {
         await db.runAsync(sql, keys.map((k) => normalize(r[k])));
       }
     }
   });
 }
 
-function normalize(v: unknown): unknown {
+function normalize(v: unknown): BindValue {
   if (typeof v === 'boolean') return v ? 1 : 0;
   if (v && typeof v === 'object') return JSON.stringify(v);
-  return v as never;
+  return v as BindValue;
 }

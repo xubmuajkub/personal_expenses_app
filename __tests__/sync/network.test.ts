@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 jest.mock('@react-native-community/netinfo', () => {
   let cb: ((s: any) => void) | null = null;
   return {
