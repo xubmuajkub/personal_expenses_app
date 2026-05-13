@@ -22,3 +22,5 @@ android/app/release/
 coverage/
 .expo-shared/
 expo-env.d.ts
+.superpowers/
+.claude/
