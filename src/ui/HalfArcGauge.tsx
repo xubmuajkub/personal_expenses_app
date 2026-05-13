@@ -1,6 +1,6 @@
 import { View } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
-import { color } from './theme';
+import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
+import { color, gradient } from './theme';
 
 interface Props {
   value: number;          // 0..1
@@ -11,9 +11,14 @@ interface Props {
   children?: React.ReactNode;
 }
 
+/**
+ * HalfArcGauge renders a 140° downward-opening arc. The progress arc is filled
+ * with the Soft Pulse gradient (pink → lilac → indigo → deep) by default; pass
+ * `fillColor` to force a solid stroke (used for danger/over-budget surfaces).
+ */
 export function HalfArcGauge({
   value, size = 120, stroke = 6,
-  trackColor = color.hairline, fillColor = color.indigo500, children,
+  trackColor = color.glassMed, fillColor, children,
 }: Props) {
   const cx = size / 2;
   const cy = size * 0.7;        // arc opens downward, center pushed down
@@ -23,11 +28,41 @@ export function HalfArcGauge({
   const sweep = endAngle - startAngle;
   const path = (from: number, to: number) => describeArc(cx, cy, r, from, to);
   const valueEnd = startAngle + sweep * Math.max(0, Math.min(value, 1));
+
+  const gradId = `gauge-pulse-grad-${size}-${stroke}`;
+  const useGradient = !fillColor;
+  const progressStroke = fillColor ?? `url(#${gradId})`;
+
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
       <Svg width={size} height={size} style={{ position: 'absolute' }}>
-        <Path d={path(startAngle, endAngle)} stroke={trackColor} strokeWidth={stroke} fill="none" strokeLinecap="round" />
-        <Path d={path(startAngle, valueEnd)} stroke={fillColor} strokeWidth={stroke} fill="none" strokeLinecap="round" />
+        {useGradient ? (
+          <Defs>
+            <LinearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
+              {gradient.pulse.colors.map((col, i) => (
+                <Stop
+                  key={col}
+                  offset={String(gradient.pulse.locations[i] ?? 0)}
+                  stopColor={col}
+                />
+              ))}
+            </LinearGradient>
+          </Defs>
+        ) : null}
+        <Path
+          d={path(startAngle, endAngle)}
+          stroke={trackColor}
+          strokeWidth={stroke}
+          fill="none"
+          strokeLinecap="round"
+        />
+        <Path
+          d={path(startAngle, valueEnd)}
+          stroke={progressStroke}
+          strokeWidth={stroke}
+          fill="none"
+          strokeLinecap="round"
+        />
       </Svg>
       <View style={{ marginTop: 8, alignItems: 'center' }}>{children}</View>
     </View>
