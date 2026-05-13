@@ -1,4 +1,4 @@
-appId: la.personalexpenses.app
+appId: online.dolemi.peapp
 ---
 # Flow: export JSON backup, then restore it and verify transaction count
 - launchApp

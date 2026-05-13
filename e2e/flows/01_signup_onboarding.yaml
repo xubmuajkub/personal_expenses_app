@@ -1,4 +1,4 @@
-appId: la.personalexpenses.app
+appId: online.dolemi.peapp
 ---
 # Flow: sign up a new account and complete onboarding
 - launchApp

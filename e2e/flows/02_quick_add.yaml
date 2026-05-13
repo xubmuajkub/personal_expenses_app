@@ -1,4 +1,4 @@
-appId: la.personalexpenses.app
+appId: online.dolemi.peapp
 ---
 # Flow: add a quick expense from the + FAB on the home tab
 - launchApp

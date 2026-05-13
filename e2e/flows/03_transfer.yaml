@@ -1,4 +1,4 @@
-appId: la.personalexpenses.app
+appId: online.dolemi.peapp
 ---
 # Flow: create a transfer between two accounts and verify balance change
 - launchApp

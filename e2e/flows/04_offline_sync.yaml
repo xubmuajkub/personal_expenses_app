@@ -1,4 +1,4 @@
-appId: la.personalexpenses.app
+appId: online.dolemi.peapp
 ---
 # Flow: log a transaction in airplane mode and verify it syncs on reconnect
 #
