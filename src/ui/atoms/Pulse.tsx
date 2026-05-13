@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import Svg, { Defs, RadialGradient, Stop, Circle, Filter, FeGaussianBlur } from 'react-native-svg';
 
@@ -11,7 +12,7 @@ type Props = {
 };
 
 export function Pulse({ color, size, opacity = 0.55, blur = 40, style, testID }: Props) {
-  const id = `pulse-${color.replace(/[^a-z0-9]/gi, '')}`;
+  const id = `pulse-${useId()}`;
   const cx = size / 2;
   const cy = size / 2;
   const r = size / 2;
