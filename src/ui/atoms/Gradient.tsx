@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { ViewStyle } from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { gradient as G } from '@/ui/theme';
 
@@ -7,7 +7,7 @@ export type GradientPreset = keyof typeof G;
 
 type Props = {
   preset: GradientPreset;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   children?: ReactNode;
   testID?: string;
 };

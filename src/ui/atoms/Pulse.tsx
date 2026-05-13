@@ -1,4 +1,4 @@
-import type { ViewStyle } from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
 import Svg, { Defs, RadialGradient, Stop, Circle, Filter, FeGaussianBlur } from 'react-native-svg';
 
 type Props = {
@@ -6,7 +6,7 @@ type Props = {
   size: number;
   opacity?: number;
   blur?: number;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   testID?: string;
 };
 
@@ -16,7 +16,13 @@ export function Pulse({ color, size, opacity = 0.55, blur = 40, style, testID }:
   const cy = size / 2;
   const r = size / 2;
   return (
-    <Svg width={size} height={size} style={style} pointerEvents="none" testID={testID}>
+    <Svg
+      width={size}
+      height={size}
+      {...(style ? { style } : {})}
+      {...(testID ? { testID } : {})}
+      pointerEvents="none"
+    >
       <Defs>
         <RadialGradient id={`grad-${id}`} cx={cx} cy={cy} r={r} fx={cx} fy={cy} gradientUnits="userSpaceOnUse">
           <Stop offset="0" stopColor={color} stopOpacity={opacity} />

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { View, type ViewStyle } from 'react-native';
+import { View, type StyleProp, type ViewStyle } from 'react-native';
 import { space } from '@/ui/theme';
 
 type Align = 'start' | 'center' | 'end' | 'stretch';
@@ -17,7 +17,7 @@ type Props = {
   gap?: number;
   align?: Align;
   justify?: Justify;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   children?: ReactNode;
   testID?: string;
 };

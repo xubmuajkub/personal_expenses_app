@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { View, type ViewStyle } from 'react-native';
+import { View, type StyleProp, type ViewStyle } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { blur as Blur, color, radius as R } from '@/ui/theme';
 
@@ -14,7 +14,7 @@ type Props = {
   radius?: keyof typeof R;
   tint?: Tint;
   border?: boolean;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   children?: ReactNode;
   testID?: string;
 };

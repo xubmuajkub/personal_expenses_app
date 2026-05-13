@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react';
-import { View, type ViewStyle } from 'react-native';
+import { View, type StyleProp, type ViewStyle } from 'react-native';
 import { color, radius as R, shadow } from '@/ui/theme';
 
 type Props = {
   variant?: 'raised' | 'flat';
   radius?: keyof typeof R;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   children?: ReactNode;
   testID?: string;
 };
