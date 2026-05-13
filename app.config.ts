@@ -20,17 +20,17 @@ const config: ExpoConfigWithPluginFns = {
   newArchEnabled: true,
   icon: './assets/icon.png',
   splash: {
-    image: './assets/splash.png',
+    image: './assets/splash-icon.png',
     resizeMode: 'contain',
     backgroundColor: '#FAF4F4',
   },
   ios: {
     supportsTablet: true,
-    bundleIdentifier: 'la.personalexpenses.app',
+    bundleIdentifier: 'online.dolemi.peapp',
     buildNumber: '1',
   },
   android: {
-    package: 'la.personalexpenses.app',
+    package: 'online.dolemi.peapp',
     versionCode: 1,
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
@@ -43,8 +43,14 @@ const config: ExpoConfigWithPluginFns = {
     'expo-notifications',
     'expo-secure-store',
     ['expo-font', { fonts: ['./assets/fonts/Geist-Variable.ttf'] }],
+    '@sentry/react-native',
     withShareExtension,
   ],
+  extra: {
+    eas: {
+      projectId: 'f78018f5-e702-4593-b64c-2232f54df990',
+    },
+  },
 };
 
 export default config;

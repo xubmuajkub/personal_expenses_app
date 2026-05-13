@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 const TARGET = 'PersonalExpensesShare';
-const BUNDLE = 'la.personalexpenses.app.share';
+const BUNDLE = 'online.dolemi.peapp.share';
 
 /**
  * Expo config plugin that adds the PersonalExpensesShare iOS share extension target.
@@ -27,31 +27,43 @@ module.exports = function withShareExtension(config) {
     }
 
     const tpl = path.join(__dirname, 'share-extension-template');
-    for (const f of ['Info.plist', 'ShareViewController.swift', 'MainInterface.storyboard']) {
+    for (const f of ['Info.plist', 'ShareViewController.swift']) {
       fs.copyFileSync(path.join(tpl, f), path.join(targetPath, f));
     }
 
     const existing = project.pbxTargetByName(TARGET);
     if (!existing) {
-      project.addTarget(TARGET, 'app_extension', TARGET, BUNDLE);
-      const targetKey = project.findTargetKey(TARGET);
+      const newTarget = project.addTarget(TARGET, 'app_extension', TARGET, BUNDLE);
+      const targetKey = newTarget.uuid;
       project.addBuildPhase(
-        ['MainInterface.storyboard'],
-        'PBXResourcesBuildPhase',
-        'Resources',
-        targetKey,
-      );
-      project.addBuildPhase(
-        ['ShareViewController.swift'],
+        [`${TARGET}/ShareViewController.swift`],
         'PBXSourcesBuildPhase',
         'Sources',
         targetKey,
       );
       project.addPbxGroup(
-        ['Info.plist', 'ShareViewController.swift', 'MainInterface.storyboard'],
+        [
+          `${TARGET}/Info.plist`,
+          `${TARGET}/ShareViewController.swift`,
+        ],
         TARGET,
         TARGET,
       );
+
+      const configurations = project.pbxXCBuildConfigurationSection();
+      for (const key in configurations) {
+        const conf = configurations[key];
+        if (typeof conf.buildSettings !== 'undefined' &&
+            conf.buildSettings.PRODUCT_NAME === `"${TARGET}"`) {
+          conf.buildSettings.SWIFT_VERSION = '5.0';
+          conf.buildSettings.IPHONEOS_DEPLOYMENT_TARGET = '15.1';
+          conf.buildSettings.INFOPLIST_FILE = `"${TARGET}/Info.plist"`;
+          conf.buildSettings.LD_RUNPATH_SEARCH_PATHS =
+            '"$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks"';
+          conf.buildSettings.CODE_SIGN_STYLE = 'Automatic';
+          conf.buildSettings.TARGETED_DEVICE_FAMILY = '"1,2"';
+        }
+      }
     }
 
     return cfg;
