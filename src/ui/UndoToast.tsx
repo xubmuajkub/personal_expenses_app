@@ -8,7 +8,8 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import { Text } from './Text';
-import { color, space, radius, shadow } from './theme';
+import { Glass } from './atoms/Glass';
+import { color, space, shadow } from './theme';
 import { useToasts, type ToastEntry } from '@/store/toasts';
 
 // ─── Imperative helper ───────────────────────────────────────────────────────
@@ -26,6 +27,11 @@ export function showUndoToast(opts: {
 }
 
 // ─── Single toast card ───────────────────────────────────────────────────────
+//
+// The Glass (BlurView) lives inside this Animated.View, whose translateY is
+// driven by a fixed-duration spring/timing — NOT by a continuous gesture. Per
+// soft-pulse spec §9, the perf rule is "don't put BlurView under a gesture-
+// driven translate"; show/dismiss timings are fine.
 
 function ToastCard({ entry }: { entry: ToastEntry }) {
   const { dismiss } = useToasts();
@@ -57,27 +63,30 @@ function ToastCard({ entry }: { entry: ToastEntry }) {
   }
 
   return (
-    <Animated.View
-      style={[
-        {
-          flexDirection: 'row',
-          alignItems: 'center',
-          backgroundColor: color.fg,
-          borderRadius: radius.md,
-          paddingVertical: space(3),
-          paddingHorizontal: space(4),
-          marginBottom: space(2),
-          ...shadow.s2,
-        },
-        animStyle,
-      ]}
-    >
-      <Text variant="body" tone="onDark" style={{ flex: 1 }} numberOfLines={2}>
-        {entry.title}
-      </Text>
-      <Pressable onPress={handleAction} style={{ marginLeft: space(3) }}>
-        <Text variant="bodyLg" tone="onDark">{entry.actionLabel}</Text>
-      </Pressable>
+    <Animated.View style={[{ marginBottom: space(2) }, shadow.s2, animStyle]}>
+      <Glass intensity="strong" radius="lg" border>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingVertical: space(3),
+            paddingHorizontal: space(4),
+          }}
+        >
+          <Text variant="body" style={{ flex: 1 }} numberOfLines={2}>
+            {entry.title}
+          </Text>
+          <Pressable
+            accessibilityRole="button"
+            onPress={handleAction}
+            style={{ marginLeft: space(3) }}
+          >
+            <Text variant="bodyLg" style={{ color: color.pulseIndigo }}>
+              {entry.actionLabel}
+            </Text>
+          </Pressable>
+        </View>
+      </Glass>
     </Animated.View>
   );
 }
