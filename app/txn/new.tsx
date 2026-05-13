@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Sheet } from '@/ui/Sheet';
 import { Field } from '@/ui/Field';
 import { Chip } from '@/ui/Chip';
 import { Button } from '@/ui/Button';
 import { Text } from '@/ui/Text';
-import { space } from '@/ui/theme';
+import { Glass, Pulse } from '@/ui/atoms';
+import { color, radius, space } from '@/ui/theme';
 import { useAuth } from '@/store/auth';
 import { useRecents } from '@/store/recents';
 import { openDb } from '@/db/sqlite';
@@ -16,7 +17,7 @@ import { getRate } from '@/db/repos/fx_rates';
 import { createTransaction } from '@/db/repos/transactions';
 import { listNotifParseRules } from '@/db/repos/notif_parse_rules';
 import { getProfile } from '@/db/repos/profiles';
-import { toMicro } from '@/domain/money';
+import { toMicro, format } from '@/domain/money';
 import { parseNotif } from '@/domain/notif_parser';
 import type { Account, Category, Currency, TxnKind } from '@/domain/types';
 
@@ -103,8 +104,20 @@ export default function NewTxn() {
 
   const filteredCats = categories.filter((c) => c.kind === kind);
 
+  const numericAmount = parseFloat(amount.replace(/,/g, '')) || 0;
+  const displayAmount = amount ? format(toMicro(numericAmount), currency) : format(0, currency);
+
   return (
     <Sheet title="Add transaction">
+      <Pulse
+        color={color.pulsePink}
+        size={260}
+        opacity={0.35}
+        blur={40}
+        style={{ position: 'absolute', top: -60, right: -60 }}
+      />
+
+      {/* Kind */}
       <Text variant="caption" tone="muted" caps style={{ marginBottom: space(1.5) }}>Kind</Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: space(3) }}>
         {(['expense', 'income'] as const).map((k) => (
@@ -112,6 +125,12 @@ export default function NewTxn() {
         ))}
       </View>
 
+      {/* Amount display */}
+      <View style={{ alignItems: 'center', marginBottom: space(2) }}>
+        <Text variant="numHero" tone="fg">
+          {displayAmount}
+        </Text>
+      </View>
       <Field
         label="Amount"
         value={amount}
@@ -119,6 +138,7 @@ export default function NewTxn() {
         keyboardType="decimal-pad"
       />
 
+      {/* Currency switcher */}
       <Text variant="caption" tone="muted" caps style={{ marginBottom: space(1.5) }}>Currency</Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: space(3) }}>
         {(['LAK', 'THB', 'USD'] as Currency[]).map((c) => (
@@ -126,6 +146,7 @@ export default function NewTxn() {
         ))}
       </View>
 
+      {/* Account */}
       <Text variant="caption" tone="muted" caps style={{ marginBottom: space(1.5) }}>Account</Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: space(3) }}>
         {accounts.map((a) => (
@@ -133,13 +154,50 @@ export default function NewTxn() {
         ))}
       </View>
 
-      {kind !== 'transfer' && (
+      {/* Category 4-col glass grid */}
+      {kind !== 'transfer' && filteredCats.length > 0 && (
         <>
           <Text variant="caption" tone="muted" caps style={{ marginBottom: space(1.5) }}>Category</Text>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: space(3) }}>
-            {filteredCats.map((c) => (
-              <Chip key={c.id} label={c.name} selected={categoryId === c.id} onPress={() => setCategoryId(c.id)} />
-            ))}
+          <View
+            style={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              marginHorizontal: -space(1),
+              marginBottom: space(3),
+            }}
+          >
+            {filteredCats.map((c) => {
+              const selected = categoryId === c.id;
+              return (
+                <Pressable
+                  key={c.id}
+                  onPress={() => setCategoryId(c.id)}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected }}
+                  style={{ width: '25%', padding: space(1) }}
+                >
+                  <Glass
+                    intensity={selected ? 'strong' : 'soft'}
+                    radius="md"
+                    border
+                    style={{
+                      borderRadius: radius.md,
+                      padding: space(2),
+                      minHeight: 60,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Text
+                      variant="caption"
+                      style={{ color: selected ? color.fg : color.fgQuiet, textAlign: 'center' }}
+                    >
+                      {c.name}
+                    </Text>
+                  </Glass>
+                </Pressable>
+              );
+            })}
           </View>
         </>
       )}
@@ -147,7 +205,7 @@ export default function NewTxn() {
       <Field label="Merchant (optional)" value={merchant} onChangeText={setMerchant} />
       <Field label="Note (optional)" value={note} onChangeText={setNote} />
 
-      <Button title="Save" variant="primary" onPress={save} loading={saving} />
+      <Button title="Save" variant="primary" onPress={save} loading={saving} style={{ alignSelf: 'stretch' }} />
     </Sheet>
   );
 }
