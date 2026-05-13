@@ -11,7 +11,7 @@ type Props = Omit<TextInputProps, 'style'> & {
   error?: string;
 };
 
-export function Field({ label, value, onChangeText, error, ...rest }: Props) {
+export function Field({ label, value, onChangeText, error, autoCapitalize = 'none', ...rest }: Props) {
   const [focused, setFocused] = useState(false);
   return (
     <View style={{ marginBottom: space(3) }}>
@@ -30,6 +30,7 @@ export function Field({ label, value, onChangeText, error, ...rest }: Props) {
       >
         <TextInput
           {...rest}
+          autoCapitalize={autoCapitalize}
           value={value}
           onChangeText={onChangeText}
           onFocus={(e) => { setFocused(true); rest.onFocus?.(e); }}
