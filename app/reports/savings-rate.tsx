@@ -5,7 +5,7 @@ import { Text } from '@/ui/Text';
 import { Chip } from '@/ui/Chip';
 import { Field } from '@/ui/Field';
 import { Ring } from '@/ui/Ring';
-import { AuroraArch } from '@/ui/AuroraArch';
+import { Gradient, Pulse, Surface } from '@/ui/atoms';
 import { color, space } from '@/ui/theme';
 import { openDb } from '@/db/sqlite';
 import { savingsRate } from '@/domain/reports/savings_rate';
@@ -79,9 +79,19 @@ export default function SavingsRateScreen() {
           </View>
         )}
 
-        {/* Hero ring over aurora */}
-        <View style={{ position: 'relative', borderRadius: 22, overflow: 'hidden', marginBottom: space(5) }}>
-          <AuroraArch height={220} />
+        {/* Hero ring over pulse */}
+        <View style={{ position: 'relative', height: 220, borderRadius: 22, overflow: 'hidden', marginBottom: space(5) }}>
+          <Gradient
+            preset="hero"
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+          />
+          <Pulse
+            color={color.pulsePink}
+            size={260}
+            opacity={0.45}
+            blur={50}
+            style={{ position: 'absolute', top: -40, right: -50 }}
+          />
           <View
             style={{
               position: 'absolute',
@@ -91,21 +101,21 @@ export default function SavingsRateScreen() {
             }}
           >
             <Ring value={ringValue} size={120} stroke={10} danger={isDanger}>
-              <Text variant="display3" tone="onDark">{savingsPct}</Text>
+              <Text variant="display3" tone="onPulse">{savingsPct}</Text>
             </Ring>
-            <Text variant="bodyLg" tone="onDark" style={{ marginTop: space(3) }}>
+            <Text variant="bodyLg" tone="onPulse" style={{ marginTop: space(3) }}>
               Savings rate
             </Text>
           </View>
         </View>
 
         {/* Stats */}
-        <View
+        <Surface
+          variant="raised"
+          radius="lg"
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            backgroundColor: color.surface,
-            borderRadius: 14,
             padding: space(5),
           }}
         >
@@ -121,7 +131,7 @@ export default function SavingsRateScreen() {
               {format(result.spend_micro, base)}
             </Text>
           </View>
-        </View>
+        </Surface>
       </View>
     </ScrollView>
   );

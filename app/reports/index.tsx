@@ -4,8 +4,8 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { Text } from '@/ui/Text';
 import { StatTriple } from '@/ui/StatTriple';
 import { MiniBars } from '@/ui/MiniBars';
-import { AuroraArch } from '@/ui/AuroraArch';
-import { color, radius, shadow, space } from '@/ui/theme';
+import { Gradient, Pulse, Surface } from '@/ui/atoms';
+import { color, space } from '@/ui/theme';
 import { openDb } from '@/db/sqlite';
 import { monthSpendBase, savingsRate, monthlyTrend } from '@/domain/reports';
 import { getProfile } from '@/db/repos/profiles';
@@ -73,10 +73,24 @@ export default function ReportsDashboard() {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={reload} />}
     >
       {/* Hero */}
-      <View style={{ position: 'relative', height: HERO_HEIGHT, marginBottom: space(5) }}>
-        <AuroraArch
-          height={HERO_HEIGHT}
+      <View style={{ position: 'relative', height: HERO_HEIGHT, marginBottom: space(5), overflow: 'hidden' }}>
+        <Gradient
+          preset="hero"
           style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+        />
+        <Pulse
+          color={color.pulsePink}
+          size={300}
+          opacity={0.5}
+          blur={50}
+          style={{ position: 'absolute', top: -60, right: -80 }}
+        />
+        <Pulse
+          color={color.pulseLilac}
+          size={260}
+          opacity={0.4}
+          blur={50}
+          style={{ position: 'absolute', bottom: -60, left: -60 }}
         />
         <View
           style={{
@@ -91,7 +105,7 @@ export default function ReportsDashboard() {
             value={format(spend, base)}
             sub={`Savings rate ${savingsPct}`}
             valueVariant="display1"
-            tone="onDark"
+            tone="onPulse"
           />
           {sparkline.length > 0 && (
             <View style={{ marginTop: space(4) }}>
@@ -108,20 +122,14 @@ export default function ReportsDashboard() {
             key={card.route}
             onPress={() => router.push(card.route)}
             accessibilityRole="button"
-            style={({ pressed }) => ({
-              backgroundColor: color.surface,
-              borderRadius: radius.lg,
-              padding: space(5),
-              borderWidth: 1,
-              borderColor: color.hairline,
-              opacity: pressed ? 0.7 : 1,
-              ...shadow.s1,
-            })}
+            style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
           >
-            <Text variant="display3">{card.title}</Text>
-            <Text variant="body" tone="muted" style={{ marginTop: space(1) }}>
-              {card.subtitle}
-            </Text>
+            <Surface variant="raised" radius="lg" style={{ padding: space(5) }}>
+              <Text variant="display3">{card.title}</Text>
+              <Text variant="body" tone="muted" style={{ marginTop: space(1) }}>
+                {card.subtitle}
+              </Text>
+            </Surface>
           </Pressable>
         ))}
       </View>

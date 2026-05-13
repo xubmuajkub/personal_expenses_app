@@ -16,12 +16,12 @@ import { useAuth } from '@/store/auth';
 const PERIODS: PeriodKey[] = ['this_month', 'last_month', 'last_3', 'last_6', 'last_12', 'custom'];
 
 const PALETTE = [
-  color.indigo500,
-  color.lilac500,
-  color.pink500,
-  color.indigo700,
-  color.pink300,
-  color.lilac300,
+  color.pulseIndigo,
+  color.pulseLilac,
+  color.pulsePink,
+  color.pulseDeep,
+  color.catFood,
+  color.catTransport,
 ];
 
 export default function ByCategoryScreen() {

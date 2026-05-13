@@ -80,7 +80,7 @@ export default function TrendsScreen() {
 
         {/* Spend chart */}
         <Text variant="display3" style={{ marginBottom: space(3) }}>Spend</Text>
-        <Bars data={spendBars} height={200} barColor={color.indigo500} />
+        <Bars data={spendBars} height={200} barColor={color.pulseIndigo} />
 
         {/* Income chart */}
         <Text variant="display3" style={{ marginTop: space(5), marginBottom: space(3) }}>
