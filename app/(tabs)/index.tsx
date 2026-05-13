@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { View, ScrollView, RefreshControl } from 'react-native';
 import { useFocusEffect } from 'expo-router';
-import { AuroraArch } from '@/ui/AuroraArch';
+import { Gradient, Pulse } from '@/ui/atoms';
 import { StatTriple } from '@/ui/StatTriple';
 import { TxnRow } from '@/ui/TxnRow';
 import { RecurringConfirmCard } from '@/ui/RecurringConfirmCard';
@@ -18,7 +18,7 @@ import { createClient } from '@supabase/supabase-js';
 import Constants from 'expo-constants';
 import type { Currency, Transaction } from '@/domain/types';
 
-const HERO_HEIGHT = 280;
+const HERO_HEIGHT = 320;
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -112,10 +112,31 @@ export default function HomeTab() {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={reload} />}
     >
       {/* Hero card */}
-      <View style={{ position: 'relative', height: HERO_HEIGHT, marginBottom: space(4) }}>
-        <AuroraArch
-          height={HERO_HEIGHT}
+      <View
+        style={{
+          position: 'relative',
+          height: HERO_HEIGHT,
+          marginBottom: space(4),
+          overflow: 'hidden',
+        }}
+      >
+        <Gradient
+          preset="hero"
           style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+        />
+        <Pulse
+          color={color.pulsePink}
+          size={320}
+          opacity={0.55}
+          blur={40}
+          style={{ position: 'absolute', top: -80, right: -80 }}
+        />
+        <Pulse
+          color={color.pulseLilac}
+          size={280}
+          opacity={0.45}
+          blur={50}
+          style={{ position: 'absolute', bottom: -60, left: -60 }}
         />
         <View
           style={{
@@ -130,7 +151,7 @@ export default function HomeTab() {
             value={format(spend, base)}
             sub={`+${format(income, base)} income`}
             valueVariant="display1"
-            tone="onDark"
+            tone="onPulse"
           />
         </View>
       </View>
