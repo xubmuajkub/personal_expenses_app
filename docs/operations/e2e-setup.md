@@ -72,7 +72,7 @@ supabase db query "SELECT id, amount, created_at FROM transactions ORDER BY crea
 Set these before running Maestro if your flows use `${ENV_VAR}` substitution:
 
 ```bash
-export MAESTRO_APP_ID=la.personalexpenses.app
+export MAESTRO_APP_ID=online.dolemi.peapp
 maestro test e2e/flows/01_signup_onboarding.yaml \
   --env RANDOM=$(date +%s)
 ```

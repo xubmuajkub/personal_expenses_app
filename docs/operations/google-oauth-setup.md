@@ -12,8 +12,8 @@
 
    | Type    | Settings                                                                                             |
    |---------|------------------------------------------------------------------------------------------------------|
-   | **iOS** | Application type: iOS; Bundle ID: `la.personalexpenses.app`                                         |
-   | **Android** | Application type: Android; Package: `la.personalexpenses.app`; SHA-1 from `eas credentials` |
+   | **iOS** | Application type: iOS; Bundle ID: `online.dolemi.peapp`                                             |
+   | **Android** | Application type: Android; Package: `online.dolemi.peapp`; SHA-1 from `eas credentials`     |
    | **Web** | Application type: Web; Authorised redirect URI: `https://djlnshaigsrxphasosow.supabase.co/auth/v1/callback` |
 
 3. Note the client IDs (and the Web client secret).

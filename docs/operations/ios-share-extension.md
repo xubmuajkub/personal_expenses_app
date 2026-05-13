@@ -35,4 +35,4 @@ If no rule matches, the full text lands in the **Note** field so you can fill in
 
 ## Bundle identifier
 
-The extension uses bundle ID `la.personalexpenses.app.share`. Ensure your Apple Developer provisioning profile covers it (add the extension App ID in the Apple Developer portal if needed).
+The extension uses bundle ID `online.dolemi.peapp.share`. Ensure your Apple Developer provisioning profile covers it (add the extension App ID in the Apple Developer portal if needed).
