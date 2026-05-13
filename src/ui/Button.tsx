@@ -1,8 +1,13 @@
-import { Pressable, ActivityIndicator, type ViewStyle } from 'react-native';
+import { Pressable, ActivityIndicator, View, type ViewStyle } from 'react-native';
 import { Text } from './Text';
-import { color, radius } from './theme';
+import { Glass } from './atoms/Glass';
+import { Gradient } from './atoms/Gradient';
+import { color, radius, shadow, space } from './theme';
 
-export type ButtonVariant = 'primary' | 'accent' | 'secondary' | 'ghost';
+export type ButtonVariant =
+  | 'primary' | 'glass' | 'ghost' | 'danger'
+  // Legacy v1 aliases — kept for backward compatibility with existing screens.
+  | 'accent' | 'secondary';
 
 type Props = {
   title: string;
@@ -14,47 +19,48 @@ type Props = {
   accessibilityLabel?: string;
 };
 
-const base: ViewStyle = {
+function resolveVariant(v: ButtonVariant): 'primary' | 'glass' | 'ghost' | 'danger' {
+  if (v === 'accent') return 'primary';
+  if (v === 'secondary') return 'glass';
+  return v;
+}
+
+const baseLayout: ViewStyle = {
   paddingVertical: 14,
   paddingHorizontal: 18,
   borderRadius: radius.pill,
   alignItems: 'center',
   justifyContent: 'center',
+  minHeight: 48,
 };
 
-const variantStyles: Record<ButtonVariant, ViewStyle> = {
-  primary: { backgroundColor: color.fg },
-  accent:  { backgroundColor: color.indigo700 },
-  secondary: {
-    backgroundColor: color.surface,
-    borderWidth: 1,
-    borderColor: color.hairline,
-  },
-  ghost: { backgroundColor: 'transparent' },
-};
-
-export function Button({ title, onPress, loading, disabled, variant = 'primary', style, accessibilityLabel }: Props) {
-  const isLight = variant === 'secondary' || variant === 'ghost';
-  const spinnerColor = isLight ? color.indigo500 : color.onDarkFg;
-  const textTone = (() => {
-    if (variant === 'ghost') return 'indigo' as const;
-    if (variant === 'secondary') return 'fg' as const;
-    return 'onDark' as const;
-  })();
-
+export function Button({
+  title, onPress, loading, disabled, variant = 'primary', style, accessibilityLabel,
+}: Props) {
+  const v = resolveVariant(variant);
+  const isInactive = !!loading || !!disabled;
+  const inner = (
+    <View style={[baseLayout, isInactive && { opacity: 0.55 }]}>
+      {loading ? <ActivityIndicator color={color.fg} /> : <Text variant="bodyLg" tone="default">{title}</Text>}
+    </View>
+  );
   return (
     <Pressable
       onPress={onPress}
-      disabled={loading || disabled}
+      disabled={isInactive}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? title}
-      accessibilityState={{ disabled: !!loading || !!disabled, busy: !!loading }}
-      style={[base, variantStyles[variant], (loading || disabled) && { opacity: 0.6 }, style]}
+      accessibilityState={{ disabled: isInactive, busy: !!loading }}
+      style={({ pressed }) => [pressed && { opacity: 0.85 }, style]}
     >
-      {loading
-        ? <ActivityIndicator color={spinnerColor} />
-        : <Text variant="bodyLg" tone={textTone}>{title}</Text>
-      }
+      {v === 'primary' && (
+        <Gradient preset="pulse" style={[baseLayout, shadow.glow, { padding: 0 }]}>
+          {inner}
+        </Gradient>
+      )}
+      {v === 'glass' && <Glass intensity="med" radius="pill">{inner}</Glass>}
+      {v === 'ghost' && <View style={[baseLayout, { borderWidth: 1, borderColor: color.glassBorder }]}>{inner}</View>}
+      {v === 'danger' && <View style={[baseLayout, { backgroundColor: color.danger, paddingHorizontal: space(5) }]}>{inner}</View>}
     </Pressable>
   );
 }
