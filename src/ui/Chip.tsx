@@ -1,5 +1,6 @@
 import { Pressable } from 'react-native';
 import { Text } from './Text';
+import { Glass } from './atoms/Glass';
 import { color, radius, space } from './theme';
 
 type Props = {
@@ -14,20 +15,25 @@ export function Chip({ label, selected, onPress }: Props) {
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={{ selected: !!selected }}
-      style={{
-        paddingHorizontal: space(3),
-        paddingVertical: space(2),
-        borderRadius: radius.pill,
-        borderWidth: 1,
-        borderColor: selected ? color.fg : color.hairline,
-        backgroundColor: selected ? color.fg : color.surfaceQuiet,
-        marginRight: space(2),
-        marginBottom: space(2),
-      }}
+      style={{ marginRight: space(2), marginBottom: space(2) }}
     >
-      <Text variant="caption" tone={selected ? 'onDark' : 'fg'}>
-        {label}
-      </Text>
+      <Glass
+        intensity={selected ? 'strong' : 'soft'}
+        radius="pill"
+        border
+        style={{
+          paddingHorizontal: space(3),
+          paddingVertical: space(2),
+          borderRadius: radius.pill,
+          minHeight: 32,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Text variant="caption" style={{ color: selected ? color.fg : color.fgQuiet }}>
+          {label}
+        </Text>
+      </Glass>
     </Pressable>
   );
 }
