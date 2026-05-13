@@ -16,8 +16,8 @@ export function Gradient({ preset, style, children, testID }: Props) {
   const g = G[preset];
   return (
     <LinearGradient
-      colors={g.colors as unknown as readonly [string, string, ...string[]]}
-      locations={g.locations as unknown as readonly [number, number, ...number[]]}
+      colors={g.colors}
+      locations={g.locations}
       start={g.start}
       end={g.end}
       style={style}

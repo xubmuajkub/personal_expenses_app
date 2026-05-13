@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react-native';
+import { BlurView } from 'expo-blur';
 import { Glass } from '@/ui/atoms/Glass';
 import { blur, color } from '@/ui/theme';
 import { Text } from 'react-native';
@@ -15,15 +16,16 @@ describe('Glass atom', () => {
     expect(getByText('hello')).toBeTruthy();
   });
 
-  it('default intensity maps to blur.med.intensity on inner BlurView', () => {
-    const { getByTestId } = render(<Glass testID="g"><Text>x</Text></Glass>);
-    expect(getByTestId('g').props.intensity).toBe(blur.med.intensity);
-    expect(getByTestId('g').props.tint).toBe('dark');
+  it('default intensity maps to blur.med on inner BlurView', () => {
+    const { UNSAFE_getByType } = render(<Glass><Text>x</Text></Glass>);
+    const bv = UNSAFE_getByType(BlurView);
+    expect(bv.props.intensity).toBe(blur.med.intensity);
+    expect(bv.props.tint).toBe('dark');
   });
 
   it('strong intensity maps correctly', () => {
-    const { getByTestId } = render(<Glass intensity="strong" testID="g" />);
-    expect(getByTestId('g').props.intensity).toBe(blur.strong.intensity);
+    const { UNSAFE_getByType } = render(<Glass intensity="strong"><Text>x</Text></Glass>);
+    expect(UNSAFE_getByType(BlurView).props.intensity).toBe(blur.strong.intensity);
   });
 
   it('overlay uses glassBorder color when border=true', () => {
@@ -31,5 +33,10 @@ describe('Glass atom', () => {
     const style = flatStyle(getByTestId('g-overlay'));
     expect(style.borderColor).toBe(color.glassBorder);
     expect(style.borderWidth).toBe(1);
+  });
+
+  it('testID lands on outer wrapper', () => {
+    const { getByTestId } = render(<Glass testID="g"><Text>x</Text></Glass>);
+    expect(getByTestId('g')).toBeTruthy();
   });
 });
