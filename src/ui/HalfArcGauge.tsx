@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { View } from 'react-native';
 import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
 import { color, gradient } from './theme';
@@ -29,7 +30,7 @@ export function HalfArcGauge({
   const path = (from: number, to: number) => describeArc(cx, cy, r, from, to);
   const valueEnd = startAngle + sweep * Math.max(0, Math.min(value, 1));
 
-  const gradId = `gauge-pulse-grad-${size}-${stroke}`;
+  const gradId = `gauge-pulse-grad-${useId()}`;
   const useGradient = !fillColor;
   const progressStroke = fillColor ?? `url(#${gradId})`;
 

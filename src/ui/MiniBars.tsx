@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { View } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { color } from './theme';
@@ -13,8 +14,9 @@ export function MiniBars({ values, height = 56 }: { values: number[]; height?: n
   const barWidth = 8;
   const gap = 4;
   const width = values.length * (barWidth + gap);
-  const idBase = 'mini-bars-grad';
-  const idToday = 'mini-bars-grad-today';
+  const uid = useId();
+  const idBase = `mini-bars-grad-${uid}`;
+  const idToday = `mini-bars-grad-today-${uid}`;
   return (
     <View style={{ height, width }}>
       <Svg width={width} height={height}>

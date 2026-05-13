@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { View } from 'react-native';
 import { color, gradient } from './theme';
@@ -23,8 +24,8 @@ export function Ring({
   const pct = Math.max(0, Math.min(value, 1));
   const overBudget = danger || value > 1;
 
-  // Unique gradient id per render so multiple Rings can coexist on one screen.
-  const gradId = `ring-pulse-grad-${size}-${stroke}`;
+  // Unique gradient id per instance so multiple Rings can coexist on one screen.
+  const gradId = `ring-pulse-grad-${useId()}`;
 
   // Resolve the stroke: explicit fillColor wins, then danger, then gradient.
   const useGradient = !fillColor && !overBudget;
