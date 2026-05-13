@@ -6,7 +6,8 @@ import { Button } from '@/ui/Button';
 import { Field } from '@/ui/Field';
 import { Chip } from '@/ui/Chip';
 import { TxnRow } from '@/ui/TxnRow';
-import { color, space, radius, shadow } from '@/ui/theme';
+import { Glass } from '@/ui/atoms';
+import { color, space, radius } from '@/ui/theme';
 import { openDb } from '@/db/sqlite';
 import { listTransactions } from '@/db/repos/transactions';
 import { listAccounts } from '@/db/repos/accounts';
@@ -148,20 +149,24 @@ export default function TransactionsTab() {
         <Pressable
           onPress={openSheet}
           accessibilityRole="button"
-          style={({ pressed }) => ({
-            paddingHorizontal: space(3),
-            paddingVertical: space(2),
-            borderRadius: radius.pill,
-            borderWidth: 1,
-            borderColor: hasFilters ? color.indigo500 : color.hairline,
-            backgroundColor: hasFilters ? color.indigo500 : color.surface,
-            opacity: pressed ? 0.7 : 1,
-            ...shadow.s1,
-          })}
+          style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
         >
-          <Text variant="caption" tone={hasFilters ? 'onDark' : 'fg'}>
-            {hasFilters ? 'Filtered' : 'Filter'}
-          </Text>
+          <Glass
+            intensity={hasFilters ? 'strong' : 'soft'}
+            radius="pill"
+            border
+            style={{
+              borderRadius: radius.pill,
+              paddingHorizontal: space(3),
+              paddingVertical: space(2),
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text variant="caption" tone={hasFilters ? 'onPulse' : 'fg'}>
+              {hasFilters ? 'Filtered' : 'Filter'}
+            </Text>
+          </Glass>
         </Pressable>
       </View>
 
