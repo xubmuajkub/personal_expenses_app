@@ -1,7 +1,8 @@
 import { View } from 'react-native';
 import { Text } from './Text';
 import { Button } from './Button';
-import { color, radius, shadow, space } from './theme';
+import { Glass } from './atoms/Glass';
+import { space } from './theme';
 import { format } from '@/domain/money';
 import type { RecurringRule, TemplateTxn } from '@/db/repos/recurring_rules';
 
@@ -22,38 +23,32 @@ export function RecurringConfirmCard({ rule, onConfirm, onSkip }: Props) {
     : '—';
 
   return (
-    <View
-      style={{
-        marginHorizontal: space(4),
-        marginBottom: space(3),
-        padding: space(4),
-        borderRadius: radius.lg,
-        backgroundColor: color.surface,
-        borderWidth: 1,
-        borderColor: color.lilac300,
-        ...shadow.s1,
-      }}
-    >
-      <View style={{ marginBottom: space(2) }}>
+    <View style={{ marginHorizontal: space(4), marginBottom: space(3) }}>
+      <Glass
+        intensity="med"
+        radius="lg"
+        border
+        style={{ padding: space(4), gap: space(2) }}
+      >
+        <Text variant="caption" tone="muted" caps>RECURRING</Text>
         <Text variant="bodyLg">{rule.name}</Text>
-        <Text variant="caption" tone="muted" style={{ marginTop: space(0.5) }}>
-          {amountLabel} · {rule.cadence}
-        </Text>
-      </View>
-      <View style={{ flexDirection: 'row', gap: space(2) }}>
-        <Button
-          title="Confirm"
-          variant="accent"
-          onPress={() => onConfirm(rule.id)}
-          style={{ flex: 1 }}
-        />
-        <Button
-          title="Skip"
-          variant="secondary"
-          onPress={() => onSkip(rule.id)}
-          style={{ flex: 1 }}
-        />
-      </View>
+        <Text variant="display3">{amountLabel}</Text>
+        <Text variant="caption" tone="muted">{rule.cadence}</Text>
+        <View style={{ flexDirection: 'row', gap: space(2), marginTop: space(2) }}>
+          <Button
+            title="Skip"
+            variant="glass"
+            onPress={() => onSkip(rule.id)}
+            style={{ flex: 1 }}
+          />
+          <Button
+            title="Confirm"
+            variant="primary"
+            onPress={() => onConfirm(rule.id)}
+            style={{ flex: 1 }}
+          />
+        </View>
+      </Glass>
     </View>
   );
 }
