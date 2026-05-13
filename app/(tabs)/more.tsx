@@ -1,45 +1,71 @@
 import { ScrollView, Pressable, View, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import {
+  User,
+  Coins,
+  Tag,
+  Wallet,
+  Repeat,
+  Store,
+  Bell,
+  RefreshCw,
+  Database,
+  Activity,
+  Info,
+  LogOut,
+  ChevronRight,
+  type LucideIcon,
+} from 'lucide-react-native';
 import { Text } from '@/ui/Text';
-import { color, space } from '@/ui/theme';
+import { Glass } from '@/ui/atoms';
+import { color, radius, space } from '@/ui/theme';
 import { useAuth } from '@/store/auth';
 
 interface RowProps {
   label: string;
+  icon: LucideIcon;
   hint?: string;
   onPress: () => void;
   danger?: boolean;
 }
 
-function Row({ label, hint, onPress, danger }: RowProps) {
+function Row({ label, icon: Icon, hint, onPress, danger }: RowProps) {
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={label}
       style={({ pressed }) => ({
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingVertical: space(4),
-        paddingHorizontal: space(5),
-        backgroundColor: pressed ? color.hairline : color.surface,
-        borderBottomWidth: 1,
-        borderBottomColor: color.hairline,
+        marginHorizontal: space(4),
+        marginBottom: space(2),
+        opacity: pressed ? 0.7 : 1,
       })}
     >
-      <Text variant="bodyLg" tone={danger ? 'danger' : 'fg'}>
-        {label}
-      </Text>
-      {hint ? (
-        <Text variant="caption" tone="muted">
-          {hint}
-        </Text>
-      ) : (
-        <Text variant="caption" tone="muted">
-          ›
-        </Text>
-      )}
+      <Glass
+        intensity="soft"
+        radius="md"
+        border
+        style={{
+          borderRadius: radius.md,
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingVertical: space(3.5),
+          paddingHorizontal: space(4),
+        }}
+      >
+        <Icon size={20} color={danger ? color.danger : color.fg} />
+        <View style={{ flex: 1, marginLeft: space(3) }}>
+          <Text variant="bodyLg" tone={danger ? 'danger' : 'fg'}>
+            {label}
+          </Text>
+        </View>
+        {hint ? (
+          <Text variant="caption" tone="muted" style={{ marginRight: space(2) }}>
+            {hint}
+          </Text>
+        ) : null}
+        <ChevronRight size={18} color={color.muted} />
+      </Glass>
     </Pressable>
   );
 }
@@ -51,7 +77,7 @@ interface SectionProps {
 
 function Section({ title, children }: SectionProps) {
   return (
-    <View style={{ marginBottom: space(6) }}>
+    <View style={{ marginBottom: space(5) }}>
       <Text
         variant="caption"
         tone="muted"
@@ -60,16 +86,7 @@ function Section({ title, children }: SectionProps) {
       >
         {title}
       </Text>
-      <View
-        style={{
-          borderTopWidth: 1,
-          borderTopColor: color.hairline,
-          borderBottomWidth: 1,
-          borderBottomColor: color.hairline,
-        }}
-      >
-        {children}
-      </View>
+      {children}
     </View>
   );
 }
@@ -96,28 +113,28 @@ export default function MoreTab() {
       </View>
 
       <Section title="Account">
-        <Row label="Profile" onPress={() => router.push('/settings/profile')} />
-        <Row label="Base currency" onPress={() => router.push('/settings/base-currency')} />
+        <Row label="Profile" icon={User} onPress={() => router.push('/settings/profile')} />
+        <Row label="Base currency" icon={Coins} onPress={() => router.push('/settings/base-currency')} />
       </Section>
 
       <Section title="Manage">
-        <Row label="Categories" onPress={() => router.push('/categories')} />
-        <Row label="Accounts" onPress={() => router.push('/accounts')} />
-        <Row label="Recurring" onPress={() => router.push('/recurring')} />
-        <Row label="Merchant rules" onPress={() => router.push('/settings/merchant-rules')} />
-        <Row label="Notification rules" onPress={() => router.push('/settings/notif-rules')} />
+        <Row label="Categories" icon={Tag} onPress={() => router.push('/categories')} />
+        <Row label="Accounts" icon={Wallet} onPress={() => router.push('/accounts')} />
+        <Row label="Recurring" icon={Repeat} onPress={() => router.push('/recurring')} />
+        <Row label="Merchant rules" icon={Store} onPress={() => router.push('/settings/merchant-rules')} />
+        <Row label="Notification rules" icon={Bell} onPress={() => router.push('/settings/notif-rules')} />
       </Section>
 
       <Section title="Settings">
-        <Row label="FX rates" onPress={() => router.push('/settings/fx')} />
-        <Row label="Notifications" onPress={() => router.push('/settings/notifications')} />
-        <Row label="Data" onPress={() => router.push('/settings/data')} />
-        <Row label="Diagnostics" onPress={() => router.push('/settings/diagnostics')} />
-        <Row label="About" onPress={() => router.push('/settings/about')} />
+        <Row label="FX rates" icon={RefreshCw} onPress={() => router.push('/settings/fx')} />
+        <Row label="Notifications" icon={Bell} onPress={() => router.push('/settings/notifications')} />
+        <Row label="Data" icon={Database} onPress={() => router.push('/settings/data')} />
+        <Row label="Diagnostics" icon={Activity} onPress={() => router.push('/settings/diagnostics')} />
+        <Row label="About" icon={Info} onPress={() => router.push('/settings/about')} />
       </Section>
 
       <Section title="Session">
-        <Row label="Sign out" danger onPress={handleSignOut} />
+        <Row label="Sign out" icon={LogOut} danger onPress={handleSignOut} />
       </Section>
 
       <View style={{ height: space(10) }} />
