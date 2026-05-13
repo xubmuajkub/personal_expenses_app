@@ -57,8 +57,8 @@ export default function NotificationsSettings() {
           <Switch
             value={enabled}
             onValueChange={(v) => { void handleToggle(v); }}
-            trackColor={{ false: color.hairline, true: color.indigo500 }}
-            thumbColor={color.onDarkFg}
+            trackColor={{ false: color.hairline, true: color.pulseIndigo }}
+            thumbColor={color.fg}
           />
         )}
       </View>

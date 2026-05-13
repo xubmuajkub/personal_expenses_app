@@ -83,8 +83,8 @@ export default function FxSettings() {
                   borderRadius: radius.pill,
                   borderWidth: 1,
                   marginRight: space(2),
-                  borderColor: color.indigo500,
-                  backgroundColor: color.surfaceQuiet,
+                  borderColor: color.pulseIndigo,
+                  backgroundColor: color.glassSoft,
                 }}
               >
                 <Text variant="caption">{pair.from}</Text>
@@ -97,8 +97,8 @@ export default function FxSettings() {
                   borderRadius: radius.pill,
                   borderWidth: 1,
                   marginRight: space(3),
-                  borderColor: color.indigo500,
-                  backgroundColor: color.surfaceQuiet,
+                  borderColor: color.pulseIndigo,
+                  backgroundColor: color.glassSoft,
                 }}
               >
                 <Text variant="caption">{pair.to}</Text>

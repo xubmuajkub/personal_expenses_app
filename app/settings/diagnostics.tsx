@@ -112,7 +112,7 @@ export default function DiagnosticsScreen() {
         {/* Stats */}
         <View
           style={{
-            backgroundColor: color.surface,
+            backgroundColor: color.bgRaised,
             borderRadius: 14,
             borderWidth: 1,
             borderColor: color.hairline,

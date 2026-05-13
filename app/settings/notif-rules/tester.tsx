@@ -77,7 +77,7 @@ export default function NotifRuleTester() {
       {result !== 'none' && (
         <View
           style={{
-            backgroundColor: color.surface,
+            backgroundColor: color.bgRaised,
             borderRadius: radius.md,
             padding: space(4),
             ...shadow.s1,
