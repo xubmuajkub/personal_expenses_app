@@ -9,12 +9,12 @@ export interface PieDatum {
 }
 
 const PALETTE = [
-  themeColor.indigo500,
-  themeColor.lilac500,
-  themeColor.pink500,
-  themeColor.indigo700,
-  themeColor.pink300,
-  themeColor.lilac300,
+  themeColor.pulseIndigo,
+  themeColor.pulseLilac,
+  themeColor.pulsePink,
+  themeColor.pulseDeep,
+  themeColor.catBills,
+  themeColor.catShopping,
 ];
 
 function polarToCartesian(cx: number, cy: number, r: number, deg: number) {
@@ -106,7 +106,7 @@ export function Pie({ data, height = 240, innerRadius = 60 }: Props) {
                 textAnchor="middle"
                 alignmentBaseline="middle"
                 fontSize={10}
-                fill={themeColor.onDarkFg}
+                fill={themeColor.fg}
                 fontWeight="600"
               >
                 {`${Math.round((s.y / total) * 100)}%`}

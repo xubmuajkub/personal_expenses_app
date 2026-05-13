@@ -18,7 +18,7 @@ const PAD_RIGHT = 8;
 const PAD_TOP = 16;
 const PAD_BOTTOM = 36;
 
-export function Bars({ data, height = 200, barColor = themeColor.indigo500 }: Props) {
+export function Bars({ data, height = 200, barColor = themeColor.pulseIndigo }: Props) {
   if (data.length === 0) {
     return <View style={{ height }} />;
   }
