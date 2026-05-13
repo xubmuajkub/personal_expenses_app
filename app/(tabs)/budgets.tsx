@@ -4,7 +4,8 @@ import { router, useFocusEffect } from 'expo-router';
 import { Text } from '@/ui/Text';
 import { Button } from '@/ui/Button';
 import { Ring } from '@/ui/Ring';
-import { color, space, shadow } from '@/ui/theme';
+import { Glass } from '@/ui/atoms';
+import { color, space, shadow, radius } from '@/ui/theme';
 import { useAuth } from '@/store/auth';
 import { openDb } from '@/db/sqlite';
 import { monthBudgetStatuses } from '@/domain/budgets';
@@ -13,8 +14,8 @@ import type { BudgetStatus } from '@/domain/budgets';
 
 function ringColor(threshold: 0 | 80 | 100): string {
   if (threshold >= 100) return color.danger;
-  if (threshold >= 80) return color.pink500;
-  return color.indigo700;
+  if (threshold >= 80) return color.pulsePink;
+  return color.pulseDeep;
 }
 
 function BudgetRow({ item }: { item: BudgetStatus }) {
@@ -22,26 +23,31 @@ function BudgetRow({ item }: { item: BudgetStatus }) {
   return (
     <Pressable
       onPress={() => router.push(`/budgets/${item.budget_id}`)}
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: space(5),
-        paddingVertical: space(4),
-        borderBottomWidth: 1,
-        borderBottomColor: color.hairline,
-      }}
+      style={{ marginHorizontal: space(4), marginBottom: space(3) }}
     >
-      <Ring value={item.pct} size={56} stroke={5} fillColor={fill}>
-        <Text variant="caption" style={{ fontSize: 10 }}>
-          {Math.round(item.pct * 100)}%
-        </Text>
-      </Ring>
-      <View style={{ marginLeft: space(4), flex: 1 }}>
-        <Text variant="bodyLg">{item.category_name}</Text>
-        <Text variant="caption" tone="muted">
-          {format(item.spend_micro, 'LAK')} / {format(item.limit_micro, 'LAK')}
-        </Text>
-      </View>
+      <Glass
+        intensity="med"
+        radius="lg"
+        border
+        style={{
+          borderRadius: radius.lg,
+          flexDirection: 'row',
+          alignItems: 'center',
+          padding: space(4),
+        }}
+      >
+        <Ring value={item.pct} size={56} stroke={5} fillColor={fill}>
+          <Text variant="caption" style={{ fontSize: 10 }}>
+            {Math.round(item.pct * 100)}%
+          </Text>
+        </Ring>
+        <View style={{ marginLeft: space(4), flex: 1 }}>
+          <Text variant="bodyLg">{item.category_name}</Text>
+          <Text variant="caption" tone="muted">
+            {format(item.spend_micro, 'LAK')} / {format(item.limit_micro, 'LAK')}
+          </Text>
+        </View>
+      </Glass>
     </Pressable>
   );
 }
@@ -63,7 +69,7 @@ export default function BudgetsTab() {
       <FlatList
         data={statuses}
         keyExtractor={(item) => item.budget_id}
-        contentContainerStyle={{ paddingBottom: space(20) }}
+        contentContainerStyle={{ paddingTop: space(4), paddingBottom: space(20) }}
         renderItem={({ item }) => <BudgetRow item={item} />}
         ListEmptyComponent={
           <View style={{ padding: space(8), alignItems: 'center' }}>
