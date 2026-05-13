@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/ui/Button';
 import { Field } from '@/ui/Field';
 import { Text } from '@/ui/Text';
-import { AuroraArch } from '@/ui/AuroraArch';
+import { Gradient, Pulse, Glass } from '@/ui/atoms';
 import { getSupabase } from '@/lib/supabase';
 import { signInWithGoogle } from '@/lib/google';
 import { color, radius, space } from '@/ui/theme';
@@ -41,71 +41,71 @@ export default function SignIn() {
 
   return (
     <View style={{ flex: 1, backgroundColor: color.bg }}>
-      <AuroraArch
-        height={200}
-        style={{ position: 'absolute', top: 0, left: 0, right: 0 }}
-        topRadius={0}
-        bottomRadius={0}
+      <Gradient
+        preset="hero"
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+      />
+      <Pulse
+        color={color.pulsePink}
+        size={320}
+        opacity={0.5}
+        blur={50}
+        style={{ position: 'absolute', top: -80, right: -80 }}
       />
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView
           contentContainerStyle={{ padding: space(6), paddingTop: space(12) }}
           keyboardShouldPersistTaps="handled"
         >
-          <Text variant="display2" style={{ marginBottom: space(8) }} tone="onDark">
+          <Text variant="display2" style={{ marginBottom: space(8) }} tone="onPulse">
             Sign in
           </Text>
 
-          <View
-            style={{
-              backgroundColor: color.bg,
-              borderRadius: radius.lg,
-              padding: space(5),
-              marginTop: space(4),
-            }}
-          >
-            <Field
-              label="Email"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoComplete="email"
-              textContentType="emailAddress"
-            />
-            <Field
-              label="Password"
-              value={pw}
-              onChangeText={setPw}
-              secureTextEntry
-              autoComplete="password"
-              textContentType="password"
-            />
+          <Glass intensity="med" radius="lg" border style={{ borderRadius: radius.lg }}>
+            <View style={{ padding: space(5) }}>
+              <Field
+                label="Email"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoComplete="email"
+                textContentType="emailAddress"
+              />
+              <Field
+                label="Password"
+                value={pw}
+                onChangeText={setPw}
+                secureTextEntry
+                autoComplete="password"
+                textContentType="password"
+              />
 
-            {err ? (
-              <Text variant="caption" tone="danger" style={{ marginBottom: space(3) }}>
-                {err}
-              </Text>
-            ) : null}
+              {err ? (
+                <Text variant="caption" tone="danger" style={{ marginBottom: space(3) }}>
+                  {err}
+                </Text>
+              ) : null}
 
-            <Button title="Sign in" onPress={onEmail} loading={loading} variant="primary" />
-            <View style={{ height: space(3) }} />
-            <Button
-              title="Continue with Google"
-              onPress={onGoogle}
-              loading={googleLoading}
-              variant="secondary"
-            />
+              <Button title="Sign in" onPress={onEmail} loading={loading} variant="primary" />
+              <View style={{ height: space(3) }} />
+              <Button
+                title="Continue with Google"
+                onPress={onGoogle}
+                loading={googleLoading}
+                variant="glass"
+              />
 
-            <View style={{ height: space(6) }} />
+              <View style={{ height: space(6) }} />
 
-            <Link href="/(auth)/forgot-password" style={{ alignSelf: 'center' }}>
-              <Text variant="body" tone="indigo">Forgot password?</Text>
-            </Link>
-            <View style={{ height: space(3) }} />
-            <Link href="/(auth)/sign-up" style={{ alignSelf: 'center' }}>
-              <Text variant="body" tone="indigo">Create account</Text>
-            </Link>
-          </View>
+              <Link href="/(auth)/forgot-password" style={{ alignSelf: 'center' }}>
+                <Text variant="body" tone="default">Forgot password?</Text>
+              </Link>
+              <View style={{ height: space(3) }} />
+              <Link href="/(auth)/sign-up" style={{ alignSelf: 'center' }}>
+                <Text variant="body" tone="default">Create account</Text>
+              </Link>
+            </View>
+          </Glass>
         </ScrollView>
       </SafeAreaView>
     </View>

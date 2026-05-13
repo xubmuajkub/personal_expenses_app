@@ -49,7 +49,7 @@ export default function PickBaseCurrency() {
               marginBottom: space(2),
               borderWidth: 1,
               borderColor: selected === c ? color.fg : color.hairline,
-              backgroundColor: selected === c ? color.surfaceQuiet : color.surface,
+              backgroundColor: selected === c ? color.glassMed : color.glassSoft,
             }}
           >
             <Text variant="display3" tone={selected === c ? 'fg' : 'muted'}>
