@@ -90,7 +90,7 @@ export default function RecurringIndex() {
               margin: space(4),
               padding: space(5),
               borderRadius: radius.lg,
-              backgroundColor: color.surface,
+              backgroundColor: color.bgRaised,
               alignItems: 'center',
               ...shadow.s1,
             }}

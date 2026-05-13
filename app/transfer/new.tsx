@@ -148,7 +148,7 @@ export default function NewTransfer() {
       {previewRate !== null && previewAmount !== null && toAccount && (
         <View
           style={{
-            backgroundColor: color.surfaceQuiet,
+            backgroundColor: color.glassSoft,
             borderRadius: 14,
             padding: space(4),
             marginBottom: space(3),

@@ -84,7 +84,7 @@ export default function AccountDetail() {
         {/* Opening balance info */}
         <View
           style={{
-            backgroundColor: color.surfaceQuiet,
+            backgroundColor: color.glassSoft,
             borderRadius: 14,
             padding: space(4),
             marginBottom: space(4),
