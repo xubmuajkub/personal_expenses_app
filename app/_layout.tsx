@@ -69,14 +69,14 @@ export default function RootLayout() {
   if (loading || onboardingLoading) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: color.bg }}>
-        <ActivityIndicator color={color.indigo500} />
+        <ActivityIndicator color={color.pulseIndigo} />
       </View>
     );
   }
 
   return (
     <>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
       <Stack screenOptions={{ headerShown: false }} />
       <ToastHost />
     </>
