@@ -4,12 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Status
 
-Pre-implementation. The repository currently contains only a design spec — no application code, no `package.json`, no build tooling. Read the spec before suggesting code changes.
+v1.1.0 in development (Soft Pulse UI refactor on `feat/soft-pulse-ui`). v1.0.0 shipped (tag + notes). Codebase is implemented; read existing code in `src/` and `app/` before suggesting changes.
 
 ## Authoritative specs
 
 - Functional: [`docs/superpowers/specs/2026-05-07-personal-expenses-design.md`](docs/superpowers/specs/2026-05-07-personal-expenses-design.md) — scope, architecture, data model, sync semantics, acceptance criteria. §14 "Decision log" records every Q/A from brainstorming; defer to it rather than inventing alternatives.
-- UI / visual language: [`docs/superpowers/specs/2026-05-07-personal-expenses-ui.md`](docs/superpowers/specs/2026-05-07-personal-expenses-ui.md) — cream-white + violet arch glow, serif display numbers, glassy chip pills, gauge rings. Tokens live in `src/ui/theme.ts`; **no inline color or font literals** in screens — always import from `theme`.
+- UI / visual language: [`docs/superpowers/specs/2026-05-13-soft-pulse-ui-refactor-design.md`](docs/superpowers/specs/2026-05-13-soft-pulse-ui-refactor-design.md) — Soft Pulse: dark midnight base, neon pulse blob accents, dark frosted glass surfaces via `expo-blur`. Atoms live in `src/ui/atoms/` (Glass, Pulse, Surface, Gradient, Stack). Tokens in `src/ui/theme.ts`; **no inline color or font literals** in screens — always import from `theme`. The prior cream/aurora spec [`2026-05-07-personal-expenses-ui.md`](docs/superpowers/specs/2026-05-07-personal-expenses-ui.md) is superseded.
 
 Implementation plan: [`docs/superpowers/plans/2026-05-07-personal-expenses.md`](docs/superpowers/plans/2026-05-07-personal-expenses.md). Task 0.4 establishes the design tokens; every UI task downstream consumes them.
 
@@ -27,6 +27,8 @@ Solo personal expense tracker for iOS and Android, written in React Native + Exp
 - **RLS on every user-scoped table**, single `owner_all` policy filtering on `user_id = auth.uid()`.
 - **Notification parse rules live in the database**, not in code. The app ships with a tester UI; never hard-code BCELOne regexes in TypeScript.
 - **Repository layer over SQLite, zustand for UI state.** No Redux. React Query is only for non-synced server-only calls.
+- **`TxnRow` MUST NOT be wrapped in `<Glass>`.** BlurView in a long list destroys scroll performance on Android. `TxnRow` renders on `<Surface variant="flat">`. See [`docs/superpowers/specs/2026-05-13-soft-pulse-ui-refactor-design.md`](docs/superpowers/specs/2026-05-13-soft-pulse-ui-refactor-design.md) §9 and the comment at the top of `src/ui/TxnRow.tsx`.
+- **Hand-built UI primitives only.** No NativeBase, Tamagui, RN Paper, Magnus, UI Kitten, or any component framework. All primitives live under `src/ui/`; icons via `lucide-react-native`; backdrop blur via `expo-blur`.
 
 ## Planned project layout
 
@@ -44,13 +46,13 @@ docs/        specs and design docs
 
 ## Commands
 
-None yet — tooling will be set up at the start of implementation. When `package.json` is added, update this section with the actual `dev`, `build`, `test`, and `lint` commands rather than guessing.
+- `npm start` — Expo dev server (dev-client)
+- `npm run ios` / `npm run android` — native run via Expo
+- `npm test` — Jest (jest-expo preset, runInBand)
+- `npm run lint` — ESLint, fails on any warning
+- `npm run typecheck` — `tsc --noEmit` with `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`
+- `npm run format` — Prettier write
 
 ## Workflow
 
-This project uses the `superpowers` skill set. The current state of the brainstorming workflow:
-
-- Spec written and committed.
-- Next step: invoke `superpowers:writing-plans` to produce the implementation plan from the spec.
-
-Don't start coding until a written plan exists.
+This project uses the `superpowers` skill set. New work goes through brainstorming → spec → plan → execution (subagent-driven). Don't start coding without a committed plan in `docs/superpowers/plans/`.

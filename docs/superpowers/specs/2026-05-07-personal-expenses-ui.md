@@ -1,7 +1,9 @@
 # Personal Expense Tracker — UI design
 
+> **SUPERSEDED 2026-05-13** by [`2026-05-13-soft-pulse-ui-refactor-design.md`](./2026-05-13-soft-pulse-ui-refactor-design.md) (Soft Pulse dark glassmorphism). Kept for historical reference of the v1.0.0 cream/aurora aesthetic.
+
 **Date:** 2026-05-07 (revised same day)
-**Status:** Approved tokens, awaiting implementation
+**Status:** Superseded — v1.0.0 shipped with this aesthetic; v1.1.0 replaces it.
 **Pairs with:** `2026-05-07-personal-expenses-design.md`
 
 ## Visual language
